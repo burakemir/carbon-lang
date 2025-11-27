@@ -50,6 +50,15 @@ struct DataflowFacts {
   Set<Fact> uses;
 };
 
+// Builds dataflow facts for a function. Optionally prints them to `out`.
+auto BuildDataflowFacts(const SemIR::File& sem_ir,
+                        SemIR::FunctionId function_id,
+                        llvm::raw_ostream* out = nullptr) -> DataflowFacts;
+
+// Checks for unused variables based on the dataflow facts.
+auto CheckUnusedVariables(const SemIR::File& sem_ir, const DataflowFacts& facts,
+                          llvm::raw_ostream& out) -> void;
+
 // Runs a simple dataflow analysis on the SemIR.
 auto RunDataflowAnalysis(const SemIR::File& sem_ir,
                          SemIR::FunctionId function_id, llvm::raw_ostream& out)
