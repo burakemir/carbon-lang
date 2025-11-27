@@ -222,6 +222,7 @@ cc_library(
         "//common:map",
         "//common:ostream",
         "//common:pretty_stack_trace_function",
+        "//common:set",
         "//common:vlog",
         "//toolchain/base:fixed_size_value_store",
         "//toolchain/base:kind_switch",
