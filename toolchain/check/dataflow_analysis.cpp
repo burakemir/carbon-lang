@@ -73,6 +73,11 @@ auto RunDataflowAnalysis(const SemIR::File& sem_ir,
   for (const auto& block_id : function.body_block_ids) {
     const auto& block = sem_ir.inst_blocks().Get(block_id);
 
+    // Emit leader fact for non-empty blocks.
+    if (!block.empty()) {
+      out << "leader: " << block_id << " -> " << block.front() << "\n";
+    }
+
     // First pass: identify LHS of assignments to avoid counting them as uses.
     Set<SemIR::InstId> assigned_lhs;
     for (const auto& inst_id : block) {
@@ -122,13 +127,16 @@ auto RunDataflowAnalysis(const SemIR::File& sem_ir,
       }
 
       // 4. Edges (Terminators)
-      // Anchor them at the instruction ID instead of block ID.
+      // Print branch edges with the target block ID.
       if (auto branch = inst.TryAs<SemIR::Branch>()) {
-        out << "edge: " << inst_id << " -> " << branch->target_id << "\n";
+        out << "branch-edge: " << inst_id << " -> " << branch->target_id
+            << "\n";
       } else if (auto branch_if = inst.TryAs<SemIR::BranchIf>()) {
-        out << "edge: " << inst_id << " -> " << branch_if->target_id << "\n";
+        out << "branch-edge: " << inst_id << " -> " << branch_if->target_id
+            << "\n";
       } else if (auto branch_arg = inst.TryAs<SemIR::BranchWithArg>()) {
-        out << "edge: " << inst_id << " -> " << branch_arg->target_id << "\n";
+        out << "branch-edge: " << inst_id << " -> " << branch_arg->target_id
+            << "\n";
       }
     }
   }
