@@ -563,14 +563,6 @@ fn F() {
   c--;
 
   // Bitwise.
-  // CHECK:STDERR: fail_todo_import_unsupported_unary_operators.carbon:[[@LINE+8]]:26: error: expected expression [ExpectedExpr]
-  // CHECK:STDERR:   let not_value: Cpp.C = ~c;
-  // CHECK:STDERR:                          ^
-  // CHECK:STDERR:
-  // CHECK:STDERR: fail_todo_import_unsupported_unary_operators.carbon:[[@LINE+4]]:26: error: `let` declarations must end with a `;` [ExpectedDeclSemi]
-  // CHECK:STDERR:   let not_value: Cpp.C = ~c;
-  // CHECK:STDERR:                          ^
-  // CHECK:STDERR:
   let not_value: Cpp.C = ~c;
 
   // Logical.

@@ -6,6 +6,7 @@ package Core library "prelude/types/float";
 
 import library "prelude/copy";
 import library "prelude/destroy";
+import library "prelude/move";
 import library "prelude/operators";
 import library "prelude/types/float_literal";
 import library "prelude/types/int_literal";
@@ -20,6 +21,12 @@ class Float(N:! IntLiteral()) {
 
 impl forall [N:! IntLiteral()] Float(N) as Copy {
   fn Op[self: Self]() -> Self = "primitive_copy";
+}
+
+impl forall [N:! IntLiteral()] Float(N) as Move {
+  fn Op[ref self: Self]() -> Self {
+    return self;
+  }
 }
 
 // Conversions.

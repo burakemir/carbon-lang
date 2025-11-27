@@ -6,6 +6,7 @@ package Core library "prelude/types/int";
 
 import library "prelude/copy";
 import library "prelude/destroy";
+import library "prelude/move";
 import library "prelude/operators";
 import library "prelude/types/int_literal";
 
@@ -19,6 +20,12 @@ class Int(N:! IntLiteral()) {
 
 impl forall [N:! IntLiteral()] Int(N) as Copy {
   fn Op[self: Self]() -> Self = "primitive_copy";
+}
+
+impl forall [N:! IntLiteral()] Int(N) as Move {
+  fn Op[ref self: Self]() -> Self {
+    return self;
+  }
 }
 
 // Conversions.

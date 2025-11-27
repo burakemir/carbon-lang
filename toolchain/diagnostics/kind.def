@@ -564,6 +564,9 @@ CARBON_DIAGNOSTIC_KIND(UnusedModifierOnDeclaration)
 CARBON_DIAGNOSTIC_KIND(UnusedPatternNoBindings)
 CARBON_DIAGNOSTIC_KIND(UnusedBinding)
 
+// Flow checking diagnostics
+CARBON_DIAGNOSTIC_KIND(UseOfMovedVariable)
+
 // ============================================================================
 // CodeGen diagnostics
 // ============================================================================

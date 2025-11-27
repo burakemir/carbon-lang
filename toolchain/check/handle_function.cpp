@@ -9,6 +9,7 @@
 #include "toolchain/check/context.h"
 #include "toolchain/check/control_flow.h"
 #include "toolchain/check/convert.h"
+#include "toolchain/check/dataflow_analysis.h"
 #include "toolchain/check/decl_introducer_state.h"
 #include "toolchain/check/generic.h"
 #include "toolchain/check/handle.h"
@@ -721,6 +722,7 @@ auto HandleParseNode(Context& context, Parse::FunctionDefinitionId node_id)
   }
 
   FinishFunctionDefinition(context, function_id);
+  RunDataflowAnalysis(context, function_id);
   context.decl_name_stack().PopScope(/*check_unused=*/true);
 
   return true;
