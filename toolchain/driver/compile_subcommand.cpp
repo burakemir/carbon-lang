@@ -369,6 +369,14 @@ Whether to run the LLVM verifier on modules.
         arg_b.Default(true);
         arg_b.Set(&run_llvm_verifier);
       });
+  b.AddFlag(
+      {
+          .name = "dump-dataflow-graph",
+          .help = R"""(
+Dump the dataflow graph to stdout during checking.
+)""",
+      },
+      [&](auto& arg_b) { arg_b.Set(&dump_dataflow_graph); });
 }
 
 static constexpr CommandLine::CommandInfo SubcommandInfo = {
@@ -765,7 +773,11 @@ auto CompilationUnit::GetCheckUnit() -> Check::Unit {
           .timings = timings_ ? &*timings_ : nullptr,
           .sem_ir = &*sem_ir_,
           .total_ir_count = total_ir_count_,
-          .clang_ast_unit = &clang_ast_unit_};
+          .clang_ast_unit = &clang_ast_unit_,
+          .dump_dataflow_graph_stream =
+              options_->dump_dataflow_graph && IncludeInDumps()
+                  ? driver_env_->output_stream
+                  : nullptr};
 }
 
 auto CompilationUnit::PostCheck() -> void {

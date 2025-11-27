@@ -567,7 +567,8 @@ auto HandleParseNode(Context& context, Parse::FunctionDefinitionId node_id)
   // If this is a generic function, collect information about the definition.
   FinishGenericDefinition(context, function.generic_id);
 
-  RunDataflowAnalysis(context.sem_ir(), function_id, llvm::errs());
+  RunDataflowAnalysis(context, function_id,
+                      context.dump_dataflow_graph_stream());
 
   return true;
 }

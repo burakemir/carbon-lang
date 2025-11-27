@@ -66,6 +66,7 @@ struct CompileOptions {
   bool prelude_import = false;
   bool include_debug_info = true;
   bool run_llvm_verifier = true;
+  bool dump_dataflow_graph = false;
 
   llvm::SmallVector<llvm::StringRef> exclude_dump_file_prefixes;
 };

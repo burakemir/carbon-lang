@@ -17,12 +17,14 @@ namespace Carbon::Check {
 Context::Context(DiagnosticEmitterBase* emitter,
                  Parse::GetTreeAndSubtreesFn tree_and_subtrees_getter,
                  SemIR::File* sem_ir, int imported_ir_count, int total_ir_count,
-                 llvm::raw_ostream* vlog_stream)
+                 llvm::raw_ostream* vlog_stream,
+                 llvm::raw_ostream* dump_dataflow_graph_stream)
     : emitter_(emitter),
       tree_and_subtrees_getter_(tree_and_subtrees_getter),
       sem_ir_(sem_ir),
       total_ir_count_(total_ir_count),
       vlog_stream_(vlog_stream),
+      dump_dataflow_graph_stream_(dump_dataflow_graph_stream),
       node_stack_(sem_ir->parse_tree(), vlog_stream),
       inst_block_stack_("inst_block_stack_", *sem_ir, vlog_stream),
       pattern_block_stack_("pattern_block_stack_", *sem_ir, vlog_stream),

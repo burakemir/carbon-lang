@@ -58,7 +58,8 @@ class Context {
   explicit Context(DiagnosticEmitterBase* emitter,
                    Parse::GetTreeAndSubtreesFn tree_and_subtrees_getter,
                    SemIR::File* sem_ir, int imported_ir_count,
-                   int total_ir_count, llvm::raw_ostream* vlog_stream);
+                   int total_ir_count, llvm::raw_ostream* vlog_stream,
+                   llvm::raw_ostream* dump_dataflow_graph_stream);
 
   // Marks an implementation TODO. Always returns false.
   auto TODO(SemIR::LocId loc_id, std::string label) -> bool;
@@ -93,6 +94,9 @@ class Context {
   }
 
   auto vlog_stream() -> llvm::raw_ostream* { return vlog_stream_; }
+  auto dump_dataflow_graph_stream() -> llvm::raw_ostream* {
+    return dump_dataflow_graph_stream_;
+  }
 
   auto node_stack() -> NodeStack& { return node_stack_; }
 
@@ -353,6 +357,9 @@ class Context {
 
   // Whether to print verbose output.
   llvm::raw_ostream* vlog_stream_;
+
+  // If non-null, the dataflow graph is dumped to this stream.
+  llvm::raw_ostream* dump_dataflow_graph_stream_;
 
   // The stack during Build. Will contain file-level parse nodes on return.
   NodeStack node_stack_;

@@ -4,19 +4,22 @@
 
 #include "toolchain/check/dataflow_analysis.h"
 
-#include <algorithm>
-#include <vector>
-
 #include "common/set.h"
+#include "llvm/ADT/BitVector.h"
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/StringRef.h"
+#include "toolchain/check/diagnostic_helpers.h"
+#include "toolchain/diagnostics/diagnostic.h"
 #include "toolchain/sem_ir/file.h"
 #include "toolchain/sem_ir/function.h"
 #include "toolchain/sem_ir/inst.h"
 #include "toolchain/sem_ir/typed_insts.h"
 
 namespace Carbon::Check {
+
+CARBON_DIAGNOSTIC(UnusedVariable, Warning, "variable `{0}` is unused",
+                  std::string);
 
 // Recursive helper to find EntityNameId from a pattern.
 static auto GetEntityNameFromPattern(const SemIR::File& sem_ir,
@@ -217,8 +220,9 @@ auto BuildDataflowFacts(const SemIR::File& sem_ir,
   return facts;
 }
 
-auto CheckUnusedVariables(const SemIR::File& sem_ir, const DataflowFacts& facts,
-                          llvm::raw_ostream& out) -> void {
+auto CheckUnusedVariables(Context& context, const DataflowFacts& facts)
+    -> void {
+  auto& sem_ir = context.sem_ir();
   // Collect all used variable IDs (EntityNameId indices).
   Set<int32_t> used_vars;
   facts.uses.ForEach([&](const Fact& use) { used_vars.Insert(use.id2); });
@@ -230,7 +234,10 @@ auto CheckUnusedVariables(const SemIR::File& sem_ir, const DataflowFacts& facts,
       auto name_id = GetName(sem_ir, SemIR::EntityNameId(var_id));
       llvm::StringRef name = sem_ir.names().GetFormatted(name_id);
       if (!name.starts_with("_")) {
-        out << "Warning: variable '" << name << "' is unused.\n";
+        auto inst_id = SemIR::InstId(def.id1);
+        auto loc_id = sem_ir.insts().GetCanonicalLocId(inst_id);
+        context.emitter().Emit(LocIdForDiagnostics(loc_id), UnusedVariable,
+                               name.str());
       }
     }
   });
@@ -325,12 +332,13 @@ auto RunLivenessAnalysis(const SemIR::File& sem_ir, DataflowFacts& facts,
   }
 }
 
-auto RunDataflowAnalysis(const SemIR::File& sem_ir,
-                         SemIR::FunctionId function_id, llvm::raw_ostream& out)
-    -> void {
-  auto facts = BuildDataflowFacts(sem_ir, function_id, &out);
-  CheckUnusedVariables(sem_ir, facts, out);
-  RunLivenessAnalysis(sem_ir, facts, out);
+auto RunDataflowAnalysis(Context& context, SemIR::FunctionId function_id,
+                         llvm::raw_ostream* out) -> void {
+  auto facts = BuildDataflowFacts(context.sem_ir(), function_id, out);
+  CheckUnusedVariables(context, facts);
+  if (out) {
+    RunLivenessAnalysis(context.sem_ir(), facts, *out);
+  }
 }
 
 }  // namespace Carbon::Check

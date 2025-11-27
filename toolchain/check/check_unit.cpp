@@ -71,7 +71,8 @@ CheckUnit::CheckUnit(
       context_(&emitter_, tree_and_subtrees_getter_,
                unit_and_imports_->unit->sem_ir,
                GetImportedIRCount(unit_and_imports),
-               unit_and_imports_->unit->total_ir_count, vlog_stream) {}
+               unit_and_imports_->unit->total_ir_count, vlog_stream,
+               unit_and_imports_->unit->dump_dataflow_graph_stream) {}
 
 auto CheckUnit::Run() -> void {
   Timings::ScopedTiming timing(unit_and_imports_->unit->timings, "check");

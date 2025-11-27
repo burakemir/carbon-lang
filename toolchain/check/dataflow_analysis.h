@@ -7,6 +7,7 @@
 
 #include "common/set.h"
 #include "llvm/Support/raw_ostream.h"
+#include "toolchain/check/context.h"
 #include "toolchain/sem_ir/file.h"
 
 namespace Carbon::Check {
@@ -54,21 +55,19 @@ struct DataflowFacts {
 
 // Builds dataflow facts for a function. Optionally prints them to `out`.
 auto BuildDataflowFacts(const SemIR::File& sem_ir,
-                        SemIR::FunctionId function_id,
-                        llvm::raw_ostream* out = nullptr) -> DataflowFacts;
+                        SemIR::FunctionId function_id, llvm::raw_ostream* out)
+    -> DataflowFacts;
 
 // Checks for unused variables based on the dataflow facts.
-auto CheckUnusedVariables(const SemIR::File& sem_ir, const DataflowFacts& facts,
-                          llvm::raw_ostream& out) -> void;
+auto CheckUnusedVariables(Context& context, const DataflowFacts& facts) -> void;
 
 // Runs liveness analysis and prints the results.
 auto RunLivenessAnalysis(const SemIR::File& sem_ir, DataflowFacts& facts,
                          llvm::raw_ostream& out) -> void;
 
 // Runs a simple dataflow analysis on the SemIR.
-auto RunDataflowAnalysis(const SemIR::File& sem_ir,
-                         SemIR::FunctionId function_id, llvm::raw_ostream& out)
-    -> void;
+auto RunDataflowAnalysis(Context& context, SemIR::FunctionId function_id,
+                         llvm::raw_ostream* out) -> void;
 
 }  // namespace Carbon::Check
 
