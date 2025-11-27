@@ -5,10 +5,12 @@
 #include <optional>
 #include <utility>
 
+#include "llvm/Support/raw_ostream.h"
 #include "toolchain/base/kind_switch.h"
 #include "toolchain/check/context.h"
 #include "toolchain/check/control_flow.h"
 #include "toolchain/check/convert.h"
+#include "toolchain/check/dataflow_analysis.h"
 #include "toolchain/check/decl_introducer_state.h"
 #include "toolchain/check/decl_name_stack.h"
 #include "toolchain/check/function.h"
@@ -564,6 +566,8 @@ auto HandleParseNode(Context& context, Parse::FunctionDefinitionId node_id)
 
   // If this is a generic function, collect information about the definition.
   FinishGenericDefinition(context, function.generic_id);
+
+  RunDataflowAnalysis(context.sem_ir(), function_id, llvm::errs());
 
   return true;
 }

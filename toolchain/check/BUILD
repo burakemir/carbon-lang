@@ -197,6 +197,7 @@ cc_library(
         "check.cpp",
         "check_unit.cpp",
         "check_unit.h",
+        "dataflow_analysis.cpp",
         "handle.h",
         "node_id_traversal.cpp",
         "node_id_traversal.h",
@@ -205,7 +206,10 @@ cc_library(
     glob([
         "handle_*.cpp",
     ]),
-    hdrs = ["check.h"],
+    hdrs = [
+        "check.h",
+        "dataflow_analysis.h",
+    ],
     deps = [
         ":context",
         ":diagnostic_emitter",
