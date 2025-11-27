@@ -24,6 +24,8 @@ auto RunDataflowAnalysis(const SemIR::File& sem_ir,
     return;
   }
 
+  DataflowFacts facts;
+
   // Helper to get variable info from various instructions.
   // Returns {NameId, VarStorageId}
   auto get_var_info =
@@ -75,6 +77,7 @@ auto RunDataflowAnalysis(const SemIR::File& sem_ir,
 
     // Emit leader fact for non-empty blocks.
     if (!block.empty()) {
+      facts.leaders.Insert(Fact{block_id.index, block.front().index});
       out << "leader: " << block_id << " -> " << block.front() << "\n";
     }
 
@@ -94,6 +97,7 @@ auto RunDataflowAnalysis(const SemIR::File& sem_ir,
       // Intra-block edge
       if (i + 1 < block.size()) {
         auto next_inst_id = block[i + 1];
+        facts.edges.Insert(Fact{inst_id.index, next_inst_id.index});
         out << "edge: " << inst_id << " -> " << next_inst_id << "\n";
       }
 
@@ -101,6 +105,7 @@ auto RunDataflowAnalysis(const SemIR::File& sem_ir,
       if (inst.Is<SemIR::VarStorage>()) {
         auto [name_id, var_id] = get_var_info(inst_id);
         if (name_id.has_value()) {
+          facts.defs.Insert(Fact{inst_id.index, var_id.index});
           out << "def: " << sem_ir.names().GetFormatted(name_id) << " ("
               << var_id << ") at " << inst_id << "\n";
         }
@@ -110,6 +115,7 @@ auto RunDataflowAnalysis(const SemIR::File& sem_ir,
       else if (auto assign = inst.TryAs<SemIR::Assign>()) {
         auto [name_id, var_id] = get_var_info(assign->lhs_id);
         if (name_id.has_value()) {
+          facts.assigns.Insert(Fact{inst_id.index, var_id.index});
           out << "assign: " << sem_ir.names().GetFormatted(name_id) << " ("
               << var_id << ") at " << inst_id << "\n";
         }
@@ -120,6 +126,7 @@ auto RunDataflowAnalysis(const SemIR::File& sem_ir,
         if (!assigned_lhs.Contains(inst_id)) {
           auto [name_id, var_id] = get_var_info(inst_id);
           if (name_id.has_value()) {
+            facts.uses.Insert(Fact{inst_id.index, var_id.index});
             out << "use: " << sem_ir.names().GetFormatted(name_id) << " ("
                 << var_id << ") at " << inst_id << "\n";
           }
@@ -127,14 +134,18 @@ auto RunDataflowAnalysis(const SemIR::File& sem_ir,
       }
 
       // 4. Edges (Terminators)
-      // Print branch edges with the target block ID.
       if (auto branch = inst.TryAs<SemIR::Branch>()) {
+        facts.branch_edges.Insert(Fact{inst_id.index, branch->target_id.index});
         out << "branch-edge: " << inst_id << " -> " << branch->target_id
             << "\n";
       } else if (auto branch_if = inst.TryAs<SemIR::BranchIf>()) {
+        facts.branch_edges.Insert(
+            Fact{inst_id.index, branch_if->target_id.index});
         out << "branch-edge: " << inst_id << " -> " << branch_if->target_id
             << "\n";
       } else if (auto branch_arg = inst.TryAs<SemIR::BranchWithArg>()) {
+        facts.branch_edges.Insert(
+            Fact{inst_id.index, branch_arg->target_id.index});
         out << "branch-edge: " << inst_id << " -> " << branch_arg->target_id
             << "\n";
       }
