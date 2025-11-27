@@ -4,7 +4,12 @@
 
 #include "toolchain/check/dataflow_analysis.h"
 
+#include <algorithm>
+#include <vector>
+
 #include "common/set.h"
+#include "llvm/ADT/DenseMap.h"
+#include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/StringRef.h"
 #include "toolchain/sem_ir/file.h"
 #include "toolchain/sem_ir/function.h"
@@ -76,7 +81,7 @@ static auto GetVarInfo(const SemIR::File& sem_ir, SemIR::InstId inst_id)
   return {SemIR::NameId::None, SemIR::EntityNameId::None};
 }
 
-// Retrieves the name of a variable given its EntityNameId.
+// Retrieves the name of a variable given its storage ID.
 static auto GetName(const SemIR::File& sem_ir, SemIR::EntityNameId entity_id)
     -> SemIR::NameId {
   return sem_ir.entity_names().Get(entity_id).name_id;
@@ -231,11 +236,101 @@ auto CheckUnusedVariables(const SemIR::File& sem_ir, const DataflowFacts& facts,
   });
 }
 
+auto RunLivenessAnalysis(const SemIR::File& sem_ir, DataflowFacts& facts,
+                         llvm::raw_ostream& out) -> void {
+  // 1. Build Predecessors Map (and identify all relevant instructions)
+  //    Edge(u, v) means u is predecessor of v.
+  llvm::DenseMap<int32_t, llvm::SmallVector<int32_t, 2>> predecessors;
+  llvm::DenseMap<int32_t, int32_t> leaders_map;  // block_id -> leader_inst_id
+
+  facts.leaders.ForEach([&](const Fact& f) { leaders_map[f.id1] = f.id2; });
+
+  facts.edges.ForEach(
+      [&](const Fact& f) { predecessors[f.id2].push_back(f.id1); });
+  facts.branch_edges.ForEach([&](const Fact& f) {
+    auto leader_it = leaders_map.find(f.id2);
+    if (leader_it != leaders_map.end()) {
+      predecessors[leader_it->second].push_back(f.id1);
+    }
+  });
+
+  // 2. Initialize Worklist with uses
+  //    If `inst` uses `var`, then `var` is live-in at `inst`.
+  std::vector<Fact> worklist;
+  facts.uses.ForEach([&](const Fact& f) {
+    if (facts.live.Insert(f).is_inserted()) {
+      worklist.push_back(f);
+    }
+  });
+
+  // 3. Process Worklist
+  while (!worklist.empty()) {
+    Fact current = worklist.back();
+    worklist.pop_back();
+    int32_t inst_id = current.id1;
+    int32_t var_id = current.id2;
+
+    // Propagate to predecessors
+    if (auto it = predecessors.find(inst_id); it != predecessors.end()) {
+      for (int32_t pred_id : it->second) {
+        // Check if predecessor kills the variable
+        bool killed = false;
+        // This is linear scan of defs/assigns, but they are Sets, so checking
+        // contains is fast if we construct a query fact. A var is killed if it
+        // is Defined or Assigned at `pred_id`.
+        if (facts.defs.Contains(Fact{pred_id, var_id}) ||
+            facts.assigns.Contains(Fact{pred_id, var_id})) {
+          killed = true;
+        }
+
+        if (!killed) {
+          Fact pred_live_fact = {pred_id, var_id};
+          if (facts.live.Insert(pred_live_fact).is_inserted()) {
+            worklist.push_back(pred_live_fact);
+          }
+        }
+      }
+    }
+  }
+
+  // 4. Output Results (Grouped by Instruction)
+  //    We want to print: Liveness: inst_id -> {var1, var2, ...}
+  //    We iterate `facts.live` and group by inst_id.
+  std::vector<int32_t> sorted_insts;
+  llvm::DenseMap<int32_t, std::vector<int32_t>> live_map;
+  facts.live.ForEach([&](const Fact& f) {
+    if (live_map.find(f.id1) == live_map.end()) {
+      sorted_insts.push_back(f.id1);
+    }
+    live_map[f.id1].push_back(f.id2);
+  });
+
+  std::sort(sorted_insts.begin(), sorted_insts.end());
+
+  for (auto inst_id : sorted_insts) {
+    out << "Liveness: " << SemIR::InstId(inst_id) << " -> {";
+    auto& vars = live_map[inst_id];
+    std::sort(vars.begin(),
+              vars.end());  // Sort var IDs for deterministic output
+    bool first = true;
+    for (auto var_id : vars) {
+      if (!first) {
+        out << ", ";
+      }
+      auto name_id = GetName(sem_ir, SemIR::EntityNameId(var_id));
+      out << sem_ir.names().GetFormatted(name_id);
+      first = false;
+    }
+    out << "}\n";
+  }
+}
+
 auto RunDataflowAnalysis(const SemIR::File& sem_ir,
                          SemIR::FunctionId function_id, llvm::raw_ostream& out)
     -> void {
   auto facts = BuildDataflowFacts(sem_ir, function_id, &out);
   CheckUnusedVariables(sem_ir, facts, out);
+  RunLivenessAnalysis(sem_ir, facts, out);
 }
 
 }  // namespace Carbon::Check

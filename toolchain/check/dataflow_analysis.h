@@ -18,7 +18,8 @@ enum class FactType {
   BranchEdge,  // (inst_id_from, block_id_to)
   Def,         // (inst_id, var_id) - Definitions (VarStorage)
   Assign,      // (inst_id, var_id) - Assignments
-  Use          // (inst_id, var_id) - Uses
+  Use,         // (inst_id, var_id) - Uses
+  Live         // (inst_id, var_id) - Variable is live at instruction (LiveIn)
 };
 
 // Represents a single fact with two IDs.
@@ -48,6 +49,7 @@ struct DataflowFacts {
   Set<Fact> defs;
   Set<Fact> assigns;
   Set<Fact> uses;
+  Set<Fact> live;
 };
 
 // Builds dataflow facts for a function. Optionally prints them to `out`.
@@ -58,6 +60,10 @@ auto BuildDataflowFacts(const SemIR::File& sem_ir,
 // Checks for unused variables based on the dataflow facts.
 auto CheckUnusedVariables(const SemIR::File& sem_ir, const DataflowFacts& facts,
                           llvm::raw_ostream& out) -> void;
+
+// Runs liveness analysis and prints the results.
+auto RunLivenessAnalysis(const SemIR::File& sem_ir, DataflowFacts& facts,
+                         llvm::raw_ostream& out) -> void;
 
 // Runs a simple dataflow analysis on the SemIR.
 auto RunDataflowAnalysis(const SemIR::File& sem_ir,
