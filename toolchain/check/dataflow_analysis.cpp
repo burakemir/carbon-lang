@@ -21,73 +21,77 @@ namespace Carbon::Check {
 CARBON_DIAGNOSTIC(UnusedVariable, Warning, "variable `{0}` is unused",
                   std::string);
 
-// Recursive helper to find EntityNameId from a pattern.
-static auto GetEntityNameFromPattern(const SemIR::File& sem_ir,
-                                     SemIR::InstId pattern_id)
-    -> SemIR::EntityNameId {
-  auto inst = sem_ir.insts().Get(pattern_id);
-  if (auto var_pattern = inst.TryAs<SemIR::VarPattern>()) {
-    return GetEntityNameFromPattern(sem_ir, var_pattern->subpattern_id);
-  }
-  if (auto var_param = inst.TryAs<SemIR::VarParamPattern>()) {
-    return GetEntityNameFromPattern(sem_ir, var_param->subpattern_id);
-  }
-  if (auto ref_param = inst.TryAs<SemIR::RefParamPattern>()) {
-    return GetEntityNameFromPattern(sem_ir, ref_param->subpattern_id);
-  }
-  if (auto val_param = inst.TryAs<SemIR::ValueParamPattern>()) {
-    return GetEntityNameFromPattern(sem_ir, val_param->subpattern_id);
-  }
-  if (auto ref_bind = inst.TryAs<SemIR::RefBindingPattern>()) {
-    return ref_bind->entity_name_id;
-  }
-  if (auto val_bind = inst.TryAs<SemIR::ValueBindingPattern>()) {
-    return val_bind->entity_name_id;
-  }
-  // TODO: Handle TuplePattern, etc. if necessary.
-  return SemIR::EntityNameId::None;
+// Retrieves the name of a variable given its storage ID.
+static auto GetName(const SemIR::File& sem_ir, SemIR::EntityNameId entity_id)
+    -> SemIR::NameId {
+  return sem_ir.entity_names().Get(entity_id).name_id;
 }
 
+// Recursive helper to find EntityNameIds from a pattern.
+static auto CollectEntityNamesFromPattern(
+    const SemIR::File& sem_ir, SemIR::InstId pattern_id,
+    llvm::SmallVectorImpl<std::pair<SemIR::EntityNameId, SemIR::InstId>>& names)
+    -> void {
+  auto inst = sem_ir.insts().Get(pattern_id);
+  if (auto var_pattern = inst.TryAs<SemIR::VarPattern>()) {
+    CollectEntityNamesFromPattern(sem_ir, var_pattern->subpattern_id, names);
+  } else if (auto var_param = inst.TryAs<SemIR::VarParamPattern>()) {
+    CollectEntityNamesFromPattern(sem_ir, var_param->subpattern_id, names);
+  } else if (auto ref_param = inst.TryAs<SemIR::RefParamPattern>()) {
+    CollectEntityNamesFromPattern(sem_ir, ref_param->subpattern_id, names);
+  } else if (auto val_param = inst.TryAs<SemIR::ValueParamPattern>()) {
+    CollectEntityNamesFromPattern(sem_ir, val_param->subpattern_id, names);
+  } else if (auto ref_bind = inst.TryAs<SemIR::RefBindingPattern>()) {
+    names.push_back({ref_bind->entity_name_id, pattern_id});
+  } else if (auto val_bind = inst.TryAs<SemIR::ValueBindingPattern>()) {
+    names.push_back({val_bind->entity_name_id, pattern_id});
+  } else if (auto tuple_pattern = inst.TryAs<SemIR::TuplePattern>()) {
+    auto elements = sem_ir.inst_blocks().Get(tuple_pattern->elements_id);
+    for (auto element_id : elements) {
+      CollectEntityNamesFromPattern(sem_ir, element_id, names);
+    }
+  }
+}
+
+struct VarInfo {
+  SemIR::NameId name_id;
+  SemIR::EntityNameId entity_id;
+  SemIR::InstId def_inst_id;
+};
+
 // Helper to get variable info from various instructions.
-// Returns {NameId, EntityNameId}
-static auto GetVarInfo(const SemIR::File& sem_ir, SemIR::InstId inst_id)
-    -> std::pair<SemIR::NameId, SemIR::EntityNameId> {
+static auto GetVarInfos(const SemIR::File& sem_ir, SemIR::InstId inst_id)
+    -> llvm::SmallVector<VarInfo> {
+  llvm::SmallVector<VarInfo> infos;
   auto inst = sem_ir.insts().Get(inst_id);
 
   if (auto var_storage = inst.TryAs<SemIR::VarStorage>()) {
     if (var_storage->pattern_id.has_value()) {
-      auto entity_name_id =
-          GetEntityNameFromPattern(sem_ir, var_storage->pattern_id);
-      if (entity_name_id.has_value()) {
-        return {sem_ir.entity_names().Get(entity_name_id).name_id,
-                entity_name_id};
+      llvm::SmallVector<std::pair<SemIR::EntityNameId, SemIR::InstId>> names;
+      CollectEntityNamesFromPattern(sem_ir, var_storage->pattern_id, names);
+      for (auto [entity_id, def_id] : names) {
+        infos.push_back({GetName(sem_ir, entity_id), entity_id, def_id});
       }
     }
   } else if (auto ref_bind = inst.TryAs<SemIR::RefBinding>()) {
-    return {sem_ir.entity_names().Get(ref_bind->entity_name_id).name_id,
-            ref_bind->entity_name_id};
+    infos.push_back({GetName(sem_ir, ref_bind->entity_name_id),
+                     ref_bind->entity_name_id, inst_id});
   } else if (auto val_bind = inst.TryAs<SemIR::ValueBinding>()) {
-    return {sem_ir.entity_names().Get(val_bind->entity_name_id).name_id,
-            val_bind->entity_name_id};
+    infos.push_back({GetName(sem_ir, val_bind->entity_name_id),
+                     val_bind->entity_name_id, inst_id});
   } else if (auto name_ref = inst.TryAs<SemIR::NameRef>()) {
     // NameRef.value_id points to the binding (RefBinding/ValueBinding).
     auto binding_id = name_ref->value_id;
     auto binding_inst = sem_ir.insts().Get(binding_id);
     if (auto ref_bind = binding_inst.TryAs<SemIR::RefBinding>()) {
-      return {sem_ir.entity_names().Get(ref_bind->entity_name_id).name_id,
-              ref_bind->entity_name_id};
+      infos.push_back({GetName(sem_ir, ref_bind->entity_name_id),
+                       ref_bind->entity_name_id, binding_id});
     } else if (auto val_bind = binding_inst.TryAs<SemIR::ValueBinding>()) {
-      return {sem_ir.entity_names().Get(val_bind->entity_name_id).name_id,
-              val_bind->entity_name_id};
+      infos.push_back({GetName(sem_ir, val_bind->entity_name_id),
+                       val_bind->entity_name_id, binding_id});
     }
   }
-  return {SemIR::NameId::None, SemIR::EntityNameId::None};
-}
-
-// Retrieves the name of a variable given its storage ID.
-static auto GetName(const SemIR::File& sem_ir, SemIR::EntityNameId entity_id)
-    -> SemIR::NameId {
-  return sem_ir.entity_names().Get(entity_id).name_id;
+  return infos;
 }
 
 auto BuildDataflowFacts(const SemIR::File& sem_ir,
@@ -108,14 +112,16 @@ auto BuildDataflowFacts(const SemIR::File& sem_ir,
   if (function.param_patterns_id.has_value()) {
     auto param_patterns = sem_ir.inst_blocks().Get(function.param_patterns_id);
     for (auto pattern_id : param_patterns) {
-      auto entity_name_id = GetEntityNameFromPattern(sem_ir, pattern_id);
-      if (entity_name_id.has_value()) {
+      llvm::SmallVector<std::pair<SemIR::EntityNameId, SemIR::InstId>>
+          entity_names;
+      CollectEntityNamesFromPattern(sem_ir, pattern_id, entity_names);
+      for (auto [entity_name_id, def_inst_id] : entity_names) {
         auto name_id = GetName(sem_ir, entity_name_id);
         // Use the pattern_id as the instruction ID for the definition.
-        facts.defs.Insert(Fact{pattern_id.index, entity_name_id.index});
+        facts.defs.Insert(Fact{def_inst_id.index, entity_name_id.index});
         if (out) {
           *out << "def: " << sem_ir.names().GetFormatted(name_id) << " ("
-               << entity_name_id.index << ") at " << pattern_id << "\n";
+               << entity_name_id.index << ") at " << def_inst_id << "\n";
         }
 
         // Identify ref parameters.
@@ -166,20 +172,20 @@ auto BuildDataflowFacts(const SemIR::File& sem_ir,
 
       // 1. Definition (VarStorage)
       if (inst.Is<SemIR::VarStorage>()) {
-        auto [name_id, var_id] = GetVarInfo(sem_ir, inst_id);
-        if (name_id.has_value()) {
-          facts.defs.Insert(Fact{inst_id.index, var_id.index});
+        auto var_infos = GetVarInfos(sem_ir, inst_id);
+        for (auto [name_id, var_id, def_inst_id] : var_infos) {
+          facts.defs.Insert(Fact{def_inst_id.index, var_id.index});
           if (out) {
             *out << "def: " << sem_ir.names().GetFormatted(name_id) << " ("
-                 << var_id.index << ") at " << inst_id << "\n";
+                 << var_id.index << ") at " << def_inst_id << "\n";
           }
         }
       }
 
       // 2. Assignment
       else if (auto assign = inst.TryAs<SemIR::Assign>()) {
-        auto [name_id, var_id] = GetVarInfo(sem_ir, assign->lhs_id);
-        if (name_id.has_value()) {
+        auto var_infos = GetVarInfos(sem_ir, assign->lhs_id);
+        for (auto [name_id, var_id, _] : var_infos) {
           facts.assigns.Insert(Fact{inst_id.index, var_id.index});
           if (out) {
             *out << "assign: " << sem_ir.names().GetFormatted(name_id) << " ("
@@ -190,8 +196,8 @@ auto BuildDataflowFacts(const SemIR::File& sem_ir,
 
       // 3. Use (NameRef)
       else if (inst.Is<SemIR::NameRef>()) {
-        auto [name_id, var_id] = GetVarInfo(sem_ir, inst_id);
-        if (name_id.has_value()) {
+        auto var_infos = GetVarInfos(sem_ir, inst_id);
+        for (auto [name_id, var_id, _] : var_infos) {
           bool is_lhs = assigned_lhs.Contains(inst_id);
           // If it's a ref parameter, assignment counts as a use because it
           // involves dereferencing the pointer/ref to write to it.
@@ -209,8 +215,8 @@ auto BuildDataflowFacts(const SemIR::File& sem_ir,
       // 4. Use (ValueOfInitializer)
       //    This is used when returning a var by value.
       else if (auto val_init = inst.TryAs<SemIR::ValueOfInitializer>()) {
-        auto [name_id, var_id] = GetVarInfo(sem_ir, val_init->init_id);
-        if (name_id.has_value()) {
+        auto var_infos = GetVarInfos(sem_ir, val_init->init_id);
+        for (auto [name_id, var_id, _] : var_infos) {
           facts.uses.Insert(Fact{inst_id.index, var_id.index});
           if (out) {
             *out << "use: " << sem_ir.names().GetFormatted(name_id) << " ("
@@ -223,8 +229,8 @@ auto BuildDataflowFacts(const SemIR::File& sem_ir,
       //    This is used when converting a reference to a value (e.g. return
       //    var).
       else if (auto acquire = inst.TryAs<SemIR::AcquireValue>()) {
-        auto [name_id, var_id] = GetVarInfo(sem_ir, acquire->value_id);
-        if (name_id.has_value()) {
+        auto var_infos = GetVarInfos(sem_ir, acquire->value_id);
+        for (auto [name_id, var_id, _] : var_infos) {
           facts.uses.Insert(Fact{inst_id.index, var_id.index});
           if (out) {
             *out << "use: " << sem_ir.names().GetFormatted(name_id) << " ("
@@ -236,8 +242,8 @@ auto BuildDataflowFacts(const SemIR::File& sem_ir,
       // 6. Use (ReturnExpr)
       //    This is used when returning a var directly (e.g. with return slot).
       else if (auto ret = inst.TryAs<SemIR::ReturnExpr>()) {
-        auto [name_id, var_id] = GetVarInfo(sem_ir, ret->expr_id);
-        if (name_id.has_value()) {
+        auto var_infos = GetVarInfos(sem_ir, ret->expr_id);
+        for (auto [name_id, var_id, _] : var_infos) {
           facts.uses.Insert(Fact{inst_id.index, var_id.index});
           if (out) {
             *out << "use: " << sem_ir.names().GetFormatted(name_id) << " ("
