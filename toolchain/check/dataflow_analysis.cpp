@@ -101,6 +101,9 @@ auto BuildDataflowFacts(const SemIR::File& sem_ir,
     *out << "Function: " << func_name << "\n";
   }
 
+  // Track ref params to treat assignments as uses.
+  Set<int32_t> ref_params;
+
   // Collect definitions from parameters.
   if (function.param_patterns_id.has_value()) {
     auto param_patterns = sem_ir.inst_blocks().Get(function.param_patterns_id);
@@ -113,6 +116,12 @@ auto BuildDataflowFacts(const SemIR::File& sem_ir,
         if (out) {
           *out << "def: " << sem_ir.names().GetFormatted(name_id) << " ("
                << entity_name_id.index << ") at " << pattern_id << "\n";
+        }
+
+        // Identify ref parameters.
+        auto inst = sem_ir.insts().Get(pattern_id);
+        if (inst.Is<SemIR::RefParamPattern>()) {
+          ref_params.Insert(entity_name_id.index);
         }
       }
     }
@@ -179,11 +188,15 @@ auto BuildDataflowFacts(const SemIR::File& sem_ir,
         }
       }
 
-      // 3. Use (NameRef not in LHS)
+      // 3. Use (NameRef)
       else if (inst.Is<SemIR::NameRef>()) {
-        if (!assigned_lhs.Contains(inst_id)) {
-          auto [name_id, var_id] = GetVarInfo(sem_ir, inst_id);
-          if (name_id.has_value()) {
+        auto [name_id, var_id] = GetVarInfo(sem_ir, inst_id);
+        if (name_id.has_value()) {
+          bool is_lhs = assigned_lhs.Contains(inst_id);
+          // If it's a ref parameter, assignment counts as a use because it
+          // involves dereferencing the pointer/ref to write to it.
+          // We handle this case explicitly for clarity.
+          if (!is_lhs || ref_params.Contains(var_id.index)) {
             facts.uses.Insert(Fact{inst_id.index, var_id.index});
             if (out) {
               *out << "use: " << sem_ir.names().GetFormatted(name_id) << " ("
@@ -193,7 +206,47 @@ auto BuildDataflowFacts(const SemIR::File& sem_ir,
         }
       }
 
-      // 4. Edges (Terminators)
+      // 4. Use (ValueOfInitializer)
+      //    This is used when returning a var by value.
+      else if (auto val_init = inst.TryAs<SemIR::ValueOfInitializer>()) {
+        auto [name_id, var_id] = GetVarInfo(sem_ir, val_init->init_id);
+        if (name_id.has_value()) {
+          facts.uses.Insert(Fact{inst_id.index, var_id.index});
+          if (out) {
+            *out << "use: " << sem_ir.names().GetFormatted(name_id) << " ("
+                 << var_id.index << ") at " << inst_id << "\n";
+          }
+        }
+      }
+
+      // 5. Use (AcquireValue)
+      //    This is used when converting a reference to a value (e.g. return
+      //    var).
+      else if (auto acquire = inst.TryAs<SemIR::AcquireValue>()) {
+        auto [name_id, var_id] = GetVarInfo(sem_ir, acquire->value_id);
+        if (name_id.has_value()) {
+          facts.uses.Insert(Fact{inst_id.index, var_id.index});
+          if (out) {
+            *out << "use: " << sem_ir.names().GetFormatted(name_id) << " ("
+                 << var_id.index << ") at " << inst_id << "\n";
+          }
+        }
+      }
+
+      // 6. Use (ReturnExpr)
+      //    This is used when returning a var directly (e.g. with return slot).
+      else if (auto ret = inst.TryAs<SemIR::ReturnExpr>()) {
+        auto [name_id, var_id] = GetVarInfo(sem_ir, ret->expr_id);
+        if (name_id.has_value()) {
+          facts.uses.Insert(Fact{inst_id.index, var_id.index});
+          if (out) {
+            *out << "use: " << sem_ir.names().GetFormatted(name_id) << " ("
+                 << var_id.index << ") at " << inst_id << "\n";
+          }
+        }
+      }
+
+      // 7. Edges (Terminators)
       if (auto branch = inst.TryAs<SemIR::Branch>()) {
         facts.branch_edges.Insert(Fact{inst_id.index, branch->target_id.index});
         if (out) {
