@@ -20,7 +20,7 @@ TEST(PrecedenceTest, OperatorsAreRecognized) {
   EXPECT_FALSE(PrecedenceGroup::ForLeading(Lex::TokenKind::Slash).has_value());
   EXPECT_FALSE(
       PrecedenceGroup::ForLeading(Lex::TokenKind::Identifier).has_value());
-  EXPECT_FALSE(PrecedenceGroup::ForLeading(Lex::TokenKind::Tilde).has_value());
+  EXPECT_TRUE(PrecedenceGroup::ForLeading(Lex::TokenKind::Tilde).has_value());
 
   EXPECT_TRUE(
       PrecedenceGroup::ForTrailing(Lex::TokenKind::Minus, false).has_value());

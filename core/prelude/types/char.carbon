@@ -6,6 +6,7 @@ package Core library "prelude/types/char";
 
 import library "prelude/copy";
 import library "prelude/destroy";
+import library "prelude/move";
 import library "prelude/operators";
 import library "prelude/types/uint";
 
@@ -17,6 +18,12 @@ class Char {
 
 impl Char as Copy {
   fn Op[self: Self]() -> Self = "primitive_copy";
+}
+
+impl Char as Move {
+  fn Op[ref self: Self]() -> Self {
+    return self;
+  }
 }
 
 impl CharLiteral() as ImplicitAs(Char) {

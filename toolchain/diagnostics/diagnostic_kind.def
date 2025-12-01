@@ -538,6 +538,7 @@ CARBON_DIAGNOSTIC_KIND(TuplePatternSizeDoesntMatchLiteral)
 
 // Dataflow diagnostics.
 CARBON_DIAGNOSTIC_KIND(UnusedVariable)
+CARBON_DIAGNOSTIC_KIND(UseOfMovedVariable)
 
 // ============================================================================
 // CodeGen diagnostics

@@ -12,17 +12,6 @@
 
 namespace Carbon::Check {
 
-// Types of facts collected during dataflow analysis.
-enum class FactType {
-  Leader,      // (block_id, inst_id)
-  Edge,        // (inst_id_from, inst_id_to)
-  BranchEdge,  // (inst_id_from, block_id_to)
-  Def,         // (inst_id, var_id) - Definitions (VarStorage)
-  Assign,      // (inst_id, var_id) - Assignments
-  Use,         // (inst_id, var_id) - Uses
-  Live         // (inst_id, var_id) - Variable is live at instruction (LiveIn)
-};
-
 // Represents a single fact with two IDs.
 // The meaning of id1 and id2 depends on the FactType.
 // Using int32_t to store the raw index values of the various Id types.
@@ -44,26 +33,27 @@ inline auto CarbonHashValue(const Fact& fact, uint64_t seed) -> HashCode {
 }
 
 struct DataflowFacts {
+  // Leader,      // (block_id, inst_id)
   Set<Fact> leaders;
+  // Edge,        // (inst_id_from, inst_id_to)
   Set<Fact> edges;
+  // BranchEdge,  // (inst_id_from, block_id_to)
   Set<Fact> branch_edges;
+  // Def,         // (inst_id, var_id) - Definitions (VarStorage)
   Set<Fact> defs;
+  // Assign,      // (inst_id, var_id) - Assignments
   Set<Fact> assigns;
+  // Use,         // (inst_id, var_id) - Uses
   Set<Fact> uses;
+  // Live         // (inst_id, var_id) - Variable is live at instruction
+  // (LiveIn)
   Set<Fact> live;
+  // Move         // (inst_id, var_id) - Instruction moves this variable
+  Set<Fact> moves;
+  // IsMoved      // (inst_id, var_id) - Variable is in moved-from state at
+  // instruction
+  Set<Fact> is_moved;
 };
-
-// Builds dataflow facts for a function. Optionally prints them to `out`.
-auto BuildDataflowFacts(const SemIR::File& sem_ir,
-                        SemIR::FunctionId function_id, llvm::raw_ostream* out)
-    -> DataflowFacts;
-
-// Checks for unused variables based on the dataflow facts.
-auto CheckUnusedVariables(Context& context, const DataflowFacts& facts) -> void;
-
-// Runs liveness analysis and prints the results.
-auto RunLivenessAnalysis(const SemIR::File& sem_ir, DataflowFacts& facts,
-                         llvm::raw_ostream& out) -> void;
 
 // Runs a simple dataflow analysis on the SemIR.
 auto RunDataflowAnalysis(Context& context, SemIR::FunctionId function_id,

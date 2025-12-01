@@ -146,6 +146,7 @@ struct PrecedenceGroup::OperatorPriorityTable {
 auto PrecedenceGroup::ForLeading(Lex::TokenKind kind)
     -> std::optional<PrecedenceGroup> {
   switch (kind) {
+    case Lex::TokenKind::Tilde:
     case Lex::TokenKind::Star:
     case Lex::TokenKind::Amp:
       return PrecedenceGroup(TermPrefix);
@@ -252,7 +253,6 @@ auto PrecedenceGroup::ForTrailing(Lex::TokenKind kind, bool infix)
       break;
 
     // Symbolic tokens that might be operators eventually.
-    case Lex::TokenKind::Tilde:
     case Lex::TokenKind::Backslash:
     case Lex::TokenKind::Comma:
     case Lex::TokenKind::TildeEqual:

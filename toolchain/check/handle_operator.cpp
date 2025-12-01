@@ -373,6 +373,11 @@ auto HandleParseNode(Context& context, Parse::PrefixOperatorStarId node_id)
   return true;
 }
 
+auto HandleParseNode(Context& context, Parse::PrefixOperatorTildeId node_id)
+    -> bool {
+  return HandleUnaryOperator(context, node_id, {"Move"});
+}
+
 // Adds the branch for a short circuit operand.
 static auto HandleShortCircuitOperand(Context& context, Parse::NodeId node_id,
                                       bool is_or) -> bool {
