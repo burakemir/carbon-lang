@@ -37,7 +37,7 @@ interface I {
 }
 
 impl (i32, i32) as I {
-  fn F[self: Self]() {}
+  fn F[unused self: Self]() {}
 }
 
 fn G(x: (i32, i32)) {
@@ -60,7 +60,7 @@ impl (i32, i32) as I {
   // This requires a thunk due to the return type mismatch.
   // The thunk internally contains an element access of the form
   // `self.(RealF)()`.
-  fn F[self: Self]() -> Derived* { return &d; }
+  fn F[unused self: Self]() -> Derived* { return &d; }
 }
 
 fn G(x: (i32, i32)) {
@@ -174,11 +174,11 @@ library "[[@TEST_NAME]]";
 
 fn Main() {
   var non_tuple: array(i32, 2) = (5, 5);
-  // CHECK:STDERR: fail_non_tuple_access.carbon:[[@LINE+4]]:20: error: type `array(i32, 2)` does not support tuple indexing; only tuples can be indexed that way [TupleIndexOnANonTupleType]
-  // CHECK:STDERR:   var first: i32 = non_tuple.0;
-  // CHECK:STDERR:                    ^~~~~~~~~~~
+  // CHECK:STDERR: fail_non_tuple_access.carbon:[[@LINE+4]]:27: error: type `array(i32, 2)` does not support tuple indexing; only tuples can be indexed that way [TupleIndexOnANonTupleType]
+  // CHECK:STDERR:   var unused first: i32 = non_tuple.0;
+  // CHECK:STDERR:                           ^~~~~~~~~~~
   // CHECK:STDERR:
-  var first: i32 = non_tuple.0;
+  var unused first: i32 = non_tuple.0;
 }
 
 // --- fail_out_of_bound_access.carbon

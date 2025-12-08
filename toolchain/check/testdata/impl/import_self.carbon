@@ -29,7 +29,7 @@ import library "a";
 class C { adapt (); }
 
 impl C as Add {
-  fn Op[self: Self](other: Self) -> Self { return () as C; }
+  fn Op[unused self: Self](unused other: Self) -> Self { return () as C; }
 }
 
 fn F(x: C, y: C) -> C {
@@ -217,13 +217,13 @@ fn F(x: C, y: C) -> C {
 // CHECK:STDOUT:     %return.patt: %pattern_type.7c7 = return_slot_pattern [concrete]
 // CHECK:STDOUT:     %return.param_patt: %pattern_type.7c7 = out_param_pattern %return.patt, call_param2 [concrete]
 // CHECK:STDOUT:   } {
-// CHECK:STDOUT:     %Self.ref.loc9_37: type = name_ref Self, @C.as.Add.impl.%C.ref [concrete = constants.%C]
-// CHECK:STDOUT:     %.loc9_37: form = init_form %Self.ref.loc9_37, call_param2 [concrete = constants.%.355]
+// CHECK:STDOUT:     %Self.ref.loc9_51: type = name_ref Self, @C.as.Add.impl.%C.ref [concrete = constants.%C]
+// CHECK:STDOUT:     %.loc9_51: form = init_form %Self.ref.loc9_51, call_param2 [concrete = constants.%.355]
 // CHECK:STDOUT:     %self.param: %C = value_param call_param0
-// CHECK:STDOUT:     %Self.ref.loc9_15: type = name_ref Self, @C.as.Add.impl.%C.ref [concrete = constants.%C]
+// CHECK:STDOUT:     %Self.ref.loc9_22: type = name_ref Self, @C.as.Add.impl.%C.ref [concrete = constants.%C]
 // CHECK:STDOUT:     %self: %C = value_binding self, %self.param
 // CHECK:STDOUT:     %other.param: %C = value_param call_param1
-// CHECK:STDOUT:     %Self.ref.loc9_28: type = name_ref Self, @C.as.Add.impl.%C.ref [concrete = constants.%C]
+// CHECK:STDOUT:     %Self.ref.loc9_42: type = name_ref Self, @C.as.Add.impl.%C.ref [concrete = constants.%C]
 // CHECK:STDOUT:     %other: %C = value_binding other, %other.param
 // CHECK:STDOUT:     %return.param: ref %C = out_param call_param2
 // CHECK:STDOUT:     %return: ref %C = return_slot %return.param
@@ -259,16 +259,16 @@ fn F(x: C, y: C) -> C {
 // CHECK:STDOUT:
 // CHECK:STDOUT: fn @C.as.Add.impl.Op(%self.param: %C, %other.param: %C) -> out %return.param: %C {
 // CHECK:STDOUT: !entry:
-// CHECK:STDOUT:   %.loc9_52: %empty_tuple.type = tuple_literal () [concrete = constants.%empty_tuple.af4]
+// CHECK:STDOUT:   %.loc9_66: %empty_tuple.type = tuple_literal () [concrete = constants.%empty_tuple.af4]
 // CHECK:STDOUT:   %C.ref: type = name_ref C, file.%C.decl [concrete = constants.%C]
 // CHECK:STDOUT:   %empty_tuple: %empty_tuple.type = tuple_value () [concrete = constants.%empty_tuple.af4]
-// CHECK:STDOUT:   %.loc9_54.1: %C = as_compatible %empty_tuple [concrete = constants.%empty_tuple.bfb]
-// CHECK:STDOUT:   %.loc9_54.2: %C = converted %.loc9_52, %.loc9_54.1 [concrete = constants.%empty_tuple.bfb]
-// CHECK:STDOUT:   %.loc9_58.1: %empty_tuple.type = as_compatible %.loc9_54.2 [concrete = constants.%empty_tuple.af4]
-// CHECK:STDOUT:   %.loc9_58.2: init %empty_tuple.type = tuple_init () [concrete = constants.%empty_tuple.af4]
-// CHECK:STDOUT:   %.loc9_58.3: init %C = as_compatible %.loc9_58.2 [concrete = constants.%empty_tuple.bfb]
-// CHECK:STDOUT:   %.loc9_58.4: init %C = converted %.loc9_54.2, %.loc9_58.3 [concrete = constants.%empty_tuple.bfb]
-// CHECK:STDOUT:   return %.loc9_58.4
+// CHECK:STDOUT:   %.loc9_68.1: %C = as_compatible %empty_tuple [concrete = constants.%empty_tuple.bfb]
+// CHECK:STDOUT:   %.loc9_68.2: %C = converted %.loc9_66, %.loc9_68.1 [concrete = constants.%empty_tuple.bfb]
+// CHECK:STDOUT:   %.loc9_72.1: %empty_tuple.type = as_compatible %.loc9_68.2 [concrete = constants.%empty_tuple.af4]
+// CHECK:STDOUT:   %.loc9_72.2: init %empty_tuple.type = tuple_init () [concrete = constants.%empty_tuple.af4]
+// CHECK:STDOUT:   %.loc9_72.3: init %C = as_compatible %.loc9_72.2 [concrete = constants.%empty_tuple.bfb]
+// CHECK:STDOUT:   %.loc9_72.4: init %C = converted %.loc9_68.2, %.loc9_72.3 [concrete = constants.%empty_tuple.bfb]
+// CHECK:STDOUT:   return %.loc9_72.4
 // CHECK:STDOUT: }
 // CHECK:STDOUT:
 // CHECK:STDOUT: fn @F(%x.param: %C, %y.param: %C) -> out %return.param: %C {

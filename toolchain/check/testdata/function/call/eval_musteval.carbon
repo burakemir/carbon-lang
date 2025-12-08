@@ -14,7 +14,15 @@
 
 library "[[@TEST_NAME]]";
 
+// CHECK:STDERR: no_eval.carbon:[[@LINE+4]]:10: warning: binding `n` unused [UnusedBinding]
+// CHECK:STDERR: fn Basic(n: i32) {}
+// CHECK:STDERR:          ^
+// CHECK:STDERR:
 fn Basic(n: i32) {}
+// CHECK:STDERR: no_eval.carbon:[[@LINE+4]]:14: warning: binding `n` unused [UnusedBinding]
+// CHECK:STDERR: eval fn Eval(n: i32) {}
+// CHECK:STDERR:              ^
+// CHECK:STDERR:
 eval fn Eval(n: i32) {}
 
 fn RuntimeArg(n: i32) {
@@ -26,6 +34,10 @@ fn RuntimeArg(n: i32) {
 
 library "[[@TEST_NAME]]";
 
+// CHECK:STDERR: fail_no_eval_musteval.carbon:[[@LINE+4]]:22: warning: binding `n` unused [UnusedBinding]
+// CHECK:STDERR: musteval fn MustEval(n: i32) {}
+// CHECK:STDERR:                      ^
+// CHECK:STDERR:
 musteval fn MustEval(n: i32) {}
 
 fn RuntimeArg(n: i32) {
@@ -43,8 +55,20 @@ fn RuntimeArg(n: i32) {
 
 library "[[@TEST_NAME]]";
 
+// CHECK:STDERR: eval.carbon:[[@LINE+4]]:10: warning: binding `n` unused [UnusedBinding]
+// CHECK:STDERR: fn Basic(n: i32) {}
+// CHECK:STDERR:          ^
+// CHECK:STDERR:
 fn Basic(n: i32) {}
+// CHECK:STDERR: eval.carbon:[[@LINE+4]]:14: warning: binding `n` unused [UnusedBinding]
+// CHECK:STDERR: eval fn Eval(n: i32) {}
+// CHECK:STDERR:              ^
+// CHECK:STDERR:
 eval fn Eval(n: i32) {}
+// CHECK:STDERR: eval.carbon:[[@LINE+4]]:22: warning: binding `n` unused [UnusedBinding]
+// CHECK:STDERR: musteval fn MustEval(n: i32) {}
+// CHECK:STDERR:                      ^
+// CHECK:STDERR:
 musteval fn MustEval(n: i32) {}
 
 fn CompileTimeArg() {
@@ -57,6 +81,10 @@ fn CompileTimeArg() {
 
 library "[[@TEST_NAME]]";
 
+// CHECK:STDERR: fail_todo_musteval_calls_musteval.carbon:[[@LINE+4]]:22: warning: binding `n` unused [UnusedBinding]
+// CHECK:STDERR: musteval fn MustEval(n: i32) {}
+// CHECK:STDERR:                      ^
+// CHECK:STDERR:
 musteval fn MustEval(n: i32) {}
 
 // TODO: This should be accepted.

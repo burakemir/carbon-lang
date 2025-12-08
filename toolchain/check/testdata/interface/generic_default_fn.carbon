@@ -15,4 +15,8 @@ interface I(T:! type) {
   fn F[ref self: Self]() -> Self*;
 }
 
+// CHECK:STDERR: generic_default_fn.carbon:[[@LINE+4]]:6: warning: binding `T` unused [UnusedBinding]
+// CHECK:STDERR: fn I(T:! type).F[ref self: Self]() -> Self* { return &self; }
+// CHECK:STDERR:      ^
+// CHECK:STDERR:
 fn I(T:! type).F[ref self: Self]() -> Self* { return &self; }

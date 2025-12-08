@@ -21,7 +21,7 @@ class ElementType {}
 class SubscriptType {}
 
 impl C as Core.IndexWith(SubscriptType) where .ElementType = ElementType {
-  fn At[self: Self](subscript: SubscriptType) -> ElementType {
+  fn At[unused self: Self](unused subscript: SubscriptType) -> ElementType {
     return {};
   }
 }
@@ -39,7 +39,7 @@ class C {
 }
 
 impl (C, C) as Core.IndexWith(Core.IntLiteral()) where .ElementType = C {
-  fn At[self: Self](subscript: Core.IntLiteral()) -> C {
+  fn At[self: Self](unused subscript: Core.IntLiteral()) -> C {
     return self.0;
   }
 }
@@ -56,7 +56,7 @@ class ElementType {}
 class SubscriptType {}
 
 impl C as Core.IndexWith(SubscriptType) where .ElementType = ElementType {
-  fn At[self: Self](subscript: SubscriptType) -> ElementType {
+  fn At[unused self: Self](unused subscript: SubscriptType) -> ElementType {
     return {};
   }
 }
@@ -395,17 +395,17 @@ let x: i32 = c[0];
 // CHECK:STDOUT:     %return.param_patt: %pattern_type.7c7 = out_param_pattern %return.patt, call_param2 [concrete]
 // CHECK:STDOUT:   } {
 // CHECK:STDOUT:     %C.ref: type = name_ref C, file.%C.decl [concrete = constants.%C]
-// CHECK:STDOUT:     %.loc9_54: form = init_form %C.ref, call_param2 [concrete = constants.%.355]
+// CHECK:STDOUT:     %.loc9_61: form = init_form %C.ref, call_param2 [concrete = constants.%.355]
 // CHECK:STDOUT:     %self.param: %tuple.type.d23 = value_param call_param0
 // CHECK:STDOUT:     %Self.ref: type = name_ref Self, @tuple.type.as.IndexWith.impl.%.loc8_11.2 [concrete = constants.%tuple.type.d23]
 // CHECK:STDOUT:     %self: %tuple.type.d23 = value_binding self, %self.param
 // CHECK:STDOUT:     %subscript.param: Core.IntLiteral = value_param call_param1
-// CHECK:STDOUT:     %.loc9_48.1: type = splice_block %.loc9_48.3 [concrete = Core.IntLiteral] {
+// CHECK:STDOUT:     %.loc9_55.1: type = splice_block %.loc9_55.3 [concrete = Core.IntLiteral] {
 // CHECK:STDOUT:       %Core.ref: <namespace> = name_ref Core, imports.%Core [concrete = imports.%Core]
 // CHECK:STDOUT:       %IntLiteral.ref: %IntLiteral.type = name_ref IntLiteral, imports.%Core.IntLiteral [concrete = constants.%IntLiteral]
 // CHECK:STDOUT:       %IntLiteral.call: init type = call %IntLiteral.ref() [concrete = Core.IntLiteral]
-// CHECK:STDOUT:       %.loc9_48.2: type = value_of_initializer %IntLiteral.call [concrete = Core.IntLiteral]
-// CHECK:STDOUT:       %.loc9_48.3: type = converted %IntLiteral.call, %.loc9_48.2 [concrete = Core.IntLiteral]
+// CHECK:STDOUT:       %.loc9_55.2: type = value_of_initializer %IntLiteral.call [concrete = Core.IntLiteral]
+// CHECK:STDOUT:       %.loc9_55.3: type = converted %IntLiteral.call, %.loc9_55.2 [concrete = Core.IntLiteral]
 // CHECK:STDOUT:     }
 // CHECK:STDOUT:     %subscript: Core.IntLiteral = value_binding subscript, %subscript.param
 // CHECK:STDOUT:     %return.param: ref %C = out_param call_param2

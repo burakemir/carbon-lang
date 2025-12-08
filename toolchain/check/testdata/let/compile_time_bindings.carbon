@@ -55,10 +55,10 @@ class C {
   fn F(b:! ((),)) {
     let c:! ((), ()) = ((), ());
 
-    var a1: () = a;
-    var b1: ((),) = b;
-    var c1: ((), ()) = c;
-    var d1: ((), (), ()) = d;
+    var unused a1: () = a;
+    var unused b1: ((),) = b;
+    var unused c1: ((), ()) = c;
+    var unused d1: ((), (), ()) = d;
   }
   // CHECK:STDERR: fail_multiple_lets.carbon:[[@LINE+8]]:7: error: semantics TODO: ``let` compile time binding outside function or interface` [SemanticsTodo]
   // CHECK:STDERR:   let d:! ((), (), ()) = ((), (), ());

@@ -372,7 +372,7 @@ fn F() {
   // We assume that this cannot return a null pointer, because the function is
   // generic in the type `T`.
   // TODO: This isn't guaranteed; is this the behavior we want?
-  let p: Cpp.S* = Cpp.foo(&s);
+  let unused p: Cpp.S* = Cpp.foo(&s);
   //@dump-sem-ir-end
 }
 
@@ -405,7 +405,7 @@ fn F() {
   var s: Cpp.S = {};
   Cpp.Direct(&s);
 
-  let a: Core.Optional(Cpp.S*) = Cpp.Indirect({} as Cpp.S);
+  let unused a: Core.Optional(Cpp.S*) = Cpp.Indirect({} as Cpp.S);
   //@dump-sem-ir-end
 }
 
@@ -417,14 +417,14 @@ import Cpp library "deduced_pointer_param.h";
 
 fn F() {
   // This could return a null pointer, so should not be given the type `Cpp.S*`.
-  // CHECK:STDERR: fail_import_deduced_pointer_param_as_optional_pointer.carbon:[[@LINE+7]]:19: error: cannot implicitly convert expression of type `Core.Optional(Cpp.S* as Core.OptionalStorage)` to `Cpp.S*` [ConversionFailure]
-  // CHECK:STDERR:   let a: Cpp.S* = Cpp.Indirect({} as Cpp.S);
-  // CHECK:STDERR:                   ^~~~~~~~~~~~~~~~~~~~~~~~~
-  // CHECK:STDERR: fail_import_deduced_pointer_param_as_optional_pointer.carbon:[[@LINE+4]]:19: note: type `Core.Optional(Cpp.S* as Core.OptionalStorage)` does not implement interface `Core.ImplicitAs(Cpp.S*)` [MissingImplInMemberAccessNote]
-  // CHECK:STDERR:   let a: Cpp.S* = Cpp.Indirect({} as Cpp.S);
-  // CHECK:STDERR:                   ^~~~~~~~~~~~~~~~~~~~~~~~~
+  // CHECK:STDERR: fail_import_deduced_pointer_param_as_optional_pointer.carbon:[[@LINE+7]]:26: error: cannot implicitly convert expression of type `Core.Optional(Cpp.S* as Core.OptionalStorage)` to `Cpp.S*` [ConversionFailure]
+  // CHECK:STDERR:   let unused a: Cpp.S* = Cpp.Indirect({} as Cpp.S);
+  // CHECK:STDERR:                          ^~~~~~~~~~~~~~~~~~~~~~~~~
+  // CHECK:STDERR: fail_import_deduced_pointer_param_as_optional_pointer.carbon:[[@LINE+4]]:26: note: type `Core.Optional(Cpp.S* as Core.OptionalStorage)` does not implement interface `Core.ImplicitAs(Cpp.S*)` [MissingImplInMemberAccessNote]
+  // CHECK:STDERR:   let unused a: Cpp.S* = Cpp.Indirect({} as Cpp.S);
+  // CHECK:STDERR:                          ^~~~~~~~~~~~~~~~~~~~~~~~~
   // CHECK:STDERR:
-  let a: Cpp.S* = Cpp.Indirect({} as Cpp.S);
+  let unused a: Cpp.S* = Cpp.Indirect({} as Cpp.S);
 }
 
 // CHECK:STDOUT: --- import_non_nullable_pointer_param.carbon
@@ -1781,19 +1781,19 @@ fn F() {
 // CHECK:STDOUT:   name_binding_decl {
 // CHECK:STDOUT:     %p.patt: %pattern_type.259 = value_binding_pattern p [concrete]
 // CHECK:STDOUT:   }
-// CHECK:STDOUT:   %Cpp.ref.loc13_19: <namespace> = name_ref Cpp, imports.%Cpp [concrete = imports.%Cpp]
+// CHECK:STDOUT:   %Cpp.ref.loc13_26: <namespace> = name_ref Cpp, imports.%Cpp [concrete = imports.%Cpp]
 // CHECK:STDOUT:   %foo.ref: %foo.cpp_overload_set.type = name_ref foo, imports.%foo.cpp_overload_set.value [concrete = constants.%foo.cpp_overload_set.value]
 // CHECK:STDOUT:   %s.ref: ref %S = name_ref s, %s
 // CHECK:STDOUT:   %addr: %ptr.5c7 = addr_of %s.ref
 // CHECK:STDOUT:   %foo.call: init %ptr.5c7 = call imports.%foo.decl(%addr)
-// CHECK:STDOUT:   %.loc13_15: type = splice_block %ptr [concrete = constants.%ptr.5c7] {
-// CHECK:STDOUT:     %Cpp.ref.loc13_10: <namespace> = name_ref Cpp, imports.%Cpp [concrete = imports.%Cpp]
+// CHECK:STDOUT:   %.loc13_22: type = splice_block %ptr [concrete = constants.%ptr.5c7] {
+// CHECK:STDOUT:     %Cpp.ref.loc13_17: <namespace> = name_ref Cpp, imports.%Cpp [concrete = imports.%Cpp]
 // CHECK:STDOUT:     %S.ref.loc13: type = name_ref S, imports.%S.decl [concrete = constants.%S]
 // CHECK:STDOUT:     %ptr: type = ptr_type %S.ref.loc13 [concrete = constants.%ptr.5c7]
 // CHECK:STDOUT:   }
-// CHECK:STDOUT:   %.loc13_29.1: %ptr.5c7 = value_of_initializer %foo.call
-// CHECK:STDOUT:   %.loc13_29.2: %ptr.5c7 = converted %foo.call, %.loc13_29.1
-// CHECK:STDOUT:   %p: %ptr.5c7 = value_binding p, %.loc13_29.2
+// CHECK:STDOUT:   %.loc13_36.1: %ptr.5c7 = value_of_initializer %foo.call
+// CHECK:STDOUT:   %.loc13_36.2: %ptr.5c7 = converted %foo.call, %.loc13_36.1
+// CHECK:STDOUT:   %p: %ptr.5c7 = value_binding p, %.loc13_36.2
 // CHECK:STDOUT:   %S.cpp_destructor.bound: <bound method> = bound_method %s.var, constants.%S.cpp_destructor
 // CHECK:STDOUT:   %S.cpp_destructor.call: init %empty_tuple.type = call %S.cpp_destructor.bound(%s.var)
 // CHECK:STDOUT:   <elided>
@@ -1856,7 +1856,7 @@ fn F() {
 // CHECK:STDOUT:   %Indirect.cpp_overload_set.value: %Indirect.cpp_overload_set.type = cpp_overload_set_value @Indirect.cpp_overload_set [concrete]
 // CHECK:STDOUT:   %Indirect__carbon_thunk.type: type = fn_type @Indirect__carbon_thunk [concrete]
 // CHECK:STDOUT:   %Indirect__carbon_thunk: %Indirect__carbon_thunk.type = struct_value () [concrete]
-// CHECK:STDOUT:   %DestroyOp.type.3e79c2.6: type = fn_type @DestroyOp.loc13_58 [concrete]
+// CHECK:STDOUT:   %DestroyOp.type.3e79c2.6: type = fn_type @DestroyOp.loc13_65 [concrete]
 // CHECK:STDOUT:   %DestroyOp.b0ebf8.6: %DestroyOp.type.3e79c2.6 = struct_value () [concrete]
 // CHECK:STDOUT:   %S.cpp_destructor.type: type = fn_type @S.cpp_destructor [concrete]
 // CHECK:STDOUT:   %S.cpp_destructor: %S.cpp_destructor.type = struct_value () [concrete]
@@ -1949,37 +1949,37 @@ fn F() {
 // CHECK:STDOUT:   name_binding_decl {
 // CHECK:STDOUT:     %a.patt: %pattern_type.8f4 = value_binding_pattern a [concrete]
 // CHECK:STDOUT:   }
-// CHECK:STDOUT:   %Cpp.ref.loc13_34: <namespace> = name_ref Cpp, imports.%Cpp [concrete = imports.%Cpp]
+// CHECK:STDOUT:   %Cpp.ref.loc13_41: <namespace> = name_ref Cpp, imports.%Cpp [concrete = imports.%Cpp]
 // CHECK:STDOUT:   %Indirect.ref: %Indirect.cpp_overload_set.type = name_ref Indirect, imports.%Indirect.cpp_overload_set.value [concrete = constants.%Indirect.cpp_overload_set.value]
-// CHECK:STDOUT:   %.loc13_48.1: %empty_struct_type = struct_literal () [concrete = constants.%empty_struct]
-// CHECK:STDOUT:   %Cpp.ref.loc13_53: <namespace> = name_ref Cpp, imports.%Cpp [concrete = imports.%Cpp]
-// CHECK:STDOUT:   %S.ref.loc13_56: type = name_ref S, imports.%S.decl [concrete = constants.%S]
-// CHECK:STDOUT:   %.loc13_48.2: ref %S = temporary_storage
-// CHECK:STDOUT:   %.loc13_48.3: init %S to %.loc13_48.2 = class_init () [concrete = constants.%S.val]
-// CHECK:STDOUT:   %.loc13_48.4: ref %S = temporary %.loc13_48.2, %.loc13_48.3
-// CHECK:STDOUT:   %.loc13_50.1: ref %S = converted %.loc13_48.1, %.loc13_48.4
-// CHECK:STDOUT:   %.loc13_50.2: %S = acquire_value %.loc13_50.1
-// CHECK:STDOUT:   %.loc13_50.3: ref %S = value_as_ref %.loc13_50.2
-// CHECK:STDOUT:   %addr.loc13: %ptr.5c7 = addr_of %.loc13_50.3
+// CHECK:STDOUT:   %.loc13_55.1: %empty_struct_type = struct_literal () [concrete = constants.%empty_struct]
+// CHECK:STDOUT:   %Cpp.ref.loc13_60: <namespace> = name_ref Cpp, imports.%Cpp [concrete = imports.%Cpp]
+// CHECK:STDOUT:   %S.ref.loc13_63: type = name_ref S, imports.%S.decl [concrete = constants.%S]
+// CHECK:STDOUT:   %.loc13_55.2: ref %S = temporary_storage
+// CHECK:STDOUT:   %.loc13_55.3: init %S to %.loc13_55.2 = class_init () [concrete = constants.%S.val]
+// CHECK:STDOUT:   %.loc13_55.4: ref %S = temporary %.loc13_55.2, %.loc13_55.3
+// CHECK:STDOUT:   %.loc13_57.1: ref %S = converted %.loc13_55.1, %.loc13_55.4
+// CHECK:STDOUT:   %.loc13_57.2: %S = acquire_value %.loc13_57.1
+// CHECK:STDOUT:   %.loc13_57.3: ref %S = value_as_ref %.loc13_57.2
+// CHECK:STDOUT:   %addr.loc13: %ptr.5c7 = addr_of %.loc13_57.3
 // CHECK:STDOUT:   %Indirect__carbon_thunk.call: init %Optional.5a9 = call imports.%Indirect__carbon_thunk.decl(%addr.loc13)
-// CHECK:STDOUT:   %.loc13_30.1: type = splice_block %Optional [concrete = constants.%Optional.5a9] {
+// CHECK:STDOUT:   %.loc13_37.1: type = splice_block %Optional [concrete = constants.%Optional.5a9] {
 // CHECK:STDOUT:     %Core.ref: <namespace> = name_ref Core, imports.%Core [concrete = imports.%Core]
 // CHECK:STDOUT:     %Optional.ref: %Optional.type = name_ref Optional, imports.%Core.Optional [concrete = constants.%Optional.generic]
-// CHECK:STDOUT:     %Cpp.ref.loc13_24: <namespace> = name_ref Cpp, imports.%Cpp [concrete = imports.%Cpp]
-// CHECK:STDOUT:     %S.ref.loc13_27: type = name_ref S, imports.%S.decl [concrete = constants.%S]
-// CHECK:STDOUT:     %ptr: type = ptr_type %S.ref.loc13_27 [concrete = constants.%ptr.5c7]
+// CHECK:STDOUT:     %Cpp.ref.loc13_31: <namespace> = name_ref Cpp, imports.%Cpp [concrete = imports.%Cpp]
+// CHECK:STDOUT:     %S.ref.loc13_34: type = name_ref S, imports.%S.decl [concrete = constants.%S]
+// CHECK:STDOUT:     %ptr: type = ptr_type %S.ref.loc13_34 [concrete = constants.%ptr.5c7]
 // CHECK:STDOUT:     %OptionalStorage.facet: %OptionalStorage.type = facet_value %ptr, (constants.%OptionalStorage.impl_witness.f66) [concrete = constants.%OptionalStorage.facet.fc6]
-// CHECK:STDOUT:     %.loc13_30.2: %OptionalStorage.type = converted %ptr, %OptionalStorage.facet [concrete = constants.%OptionalStorage.facet.fc6]
+// CHECK:STDOUT:     %.loc13_37.2: %OptionalStorage.type = converted %ptr, %OptionalStorage.facet [concrete = constants.%OptionalStorage.facet.fc6]
 // CHECK:STDOUT:     %Optional: type = class_type @Optional, @Optional(constants.%OptionalStorage.facet.fc6) [concrete = constants.%Optional.5a9]
 // CHECK:STDOUT:   }
-// CHECK:STDOUT:   %.loc13_58.1: ref %Optional.5a9 = temporary_storage
-// CHECK:STDOUT:   %.loc13_58.2: ref %Optional.5a9 = temporary %.loc13_58.1, %Indirect__carbon_thunk.call
-// CHECK:STDOUT:   %.loc13_58.3: %Optional.5a9 = acquire_value %.loc13_58.2
-// CHECK:STDOUT:   %a: %Optional.5a9 = value_binding a, %.loc13_58.3
-// CHECK:STDOUT:   %DestroyOp.bound.loc13: <bound method> = bound_method %.loc13_58.2, constants.%DestroyOp.b0ebf8.6
-// CHECK:STDOUT:   %DestroyOp.call.loc13: init %empty_tuple.type = call %DestroyOp.bound.loc13(%.loc13_58.2)
-// CHECK:STDOUT:   %S.cpp_destructor.bound.loc13: <bound method> = bound_method %.loc13_48.4, constants.%S.cpp_destructor
-// CHECK:STDOUT:   %S.cpp_destructor.call.loc13: init %empty_tuple.type = call %S.cpp_destructor.bound.loc13(%.loc13_48.4)
+// CHECK:STDOUT:   %.loc13_65.1: ref %Optional.5a9 = temporary_storage
+// CHECK:STDOUT:   %.loc13_65.2: ref %Optional.5a9 = temporary %.loc13_65.1, %Indirect__carbon_thunk.call
+// CHECK:STDOUT:   %.loc13_65.3: %Optional.5a9 = acquire_value %.loc13_65.2
+// CHECK:STDOUT:   %a: %Optional.5a9 = value_binding a, %.loc13_65.3
+// CHECK:STDOUT:   %DestroyOp.bound.loc13: <bound method> = bound_method %.loc13_65.2, constants.%DestroyOp.b0ebf8.6
+// CHECK:STDOUT:   %DestroyOp.call.loc13: init %empty_tuple.type = call %DestroyOp.bound.loc13(%.loc13_65.2)
+// CHECK:STDOUT:   %S.cpp_destructor.bound.loc13: <bound method> = bound_method %.loc13_55.4, constants.%S.cpp_destructor
+// CHECK:STDOUT:   %S.cpp_destructor.call.loc13: init %empty_tuple.type = call %S.cpp_destructor.bound.loc13(%.loc13_55.4)
 // CHECK:STDOUT:   %DestroyOp.bound.loc11: <bound method> = bound_method %.loc11_14.3, constants.%DestroyOp.b0ebf8.6
 // CHECK:STDOUT:   %DestroyOp.call.loc11: init %empty_tuple.type = call %DestroyOp.bound.loc11(%.loc11_14.3)
 // CHECK:STDOUT:   %S.cpp_destructor.bound.loc10: <bound method> = bound_method %s.var, constants.%S.cpp_destructor
@@ -1987,7 +1987,7 @@ fn F() {
 // CHECK:STDOUT:   <elided>
 // CHECK:STDOUT: }
 // CHECK:STDOUT:
-// CHECK:STDOUT: fn @DestroyOp.loc13_58(%self.param: %Optional.5a9) = "no_op";
+// CHECK:STDOUT: fn @DestroyOp.loc13_65(%self.param: %Optional.5a9) = "no_op";
 // CHECK:STDOUT:
-// CHECK:STDOUT: fn @DestroyOp.loc13_48(%self.param: %S) = "no_op";
+// CHECK:STDOUT: fn @DestroyOp.loc13_55(%self.param: %S) = "no_op";
 // CHECK:STDOUT:

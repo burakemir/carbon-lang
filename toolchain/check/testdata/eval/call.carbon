@@ -72,9 +72,13 @@ library "[[@TEST_NAME]]";
 eval fn F(x: i32) -> i32 { return x; }
 
 fn G(N:! i32) {
-  // CHECK:STDERR: fail_todo_dependent_call.carbon:[[@LINE+4]]:10: error: cannot evaluate type expression [TypeExprEvaluationFailure]
+  // CHECK:STDERR: fail_todo_dependent_call.carbon:[[@LINE+8]]:10: error: cannot evaluate type expression [TypeExprEvaluationFailure]
   // CHECK:STDERR:   var a: array(i32, F(N)) = (0, 1, 2);
   // CHECK:STDERR:          ^~~~~~~~~~~~~~~~
+  // CHECK:STDERR:
+  // CHECK:STDERR: fail_todo_dependent_call.carbon:[[@LINE+4]]:7: warning: binding `a` unused [UnusedBinding]
+  // CHECK:STDERR:   var a: array(i32, F(N)) = (0, 1, 2);
+  // CHECK:STDERR:       ^
   // CHECK:STDERR:
   var a: array(i32, F(N)) = (0, 1, 2);
 }
@@ -91,17 +95,21 @@ eval fn F(_: i32) -> type {
 }
 
 fn UseFGenerically(X:! i32) {
-  // CHECK:STDERR: fail_todo_dependent_call_type.carbon:[[@LINE+12]]:3: error: member name of type `<dependent type>` in compound member access is not an instance member or an interface member [CompoundMemberAccessDoesNotUseBase]
+  // CHECK:STDERR: fail_todo_dependent_call_type.carbon:[[@LINE+16]]:3: error: member name of type `<dependent type>` in compound member access is not an instance member or an interface member [CompoundMemberAccessDoesNotUseBase]
   // CHECK:STDERR:   var v: F(X) = {};
   // CHECK:STDERR:   ^~~~~~~~~~~
   // CHECK:STDERR:
-  // CHECK:STDERR: fail_todo_dependent_call_type.carbon:[[@LINE+8]]:3: error: value of type `<dependent type>` is not callable [CallToNonCallable]
+  // CHECK:STDERR: fail_todo_dependent_call_type.carbon:[[@LINE+12]]:3: error: value of type `<dependent type>` is not callable [CallToNonCallable]
   // CHECK:STDERR:   var v: F(X) = {};
   // CHECK:STDERR:   ^~~~~~~~~~~
   // CHECK:STDERR:
-  // CHECK:STDERR: fail_todo_dependent_call_type.carbon:[[@LINE+4]]:3: error: cannot access member of interface `Core.Destroy` in type `<cannot stringify inst7800017A: {kind: Call, arg0: inst7800003F, arg1: inst_block78000081, type: type(TypeType)}>` that does not implement that interface [MissingImplInMemberAccess]
+  // CHECK:STDERR: fail_todo_dependent_call_type.carbon:[[@LINE+8]]:3: error: cannot access member of interface `Core.Destroy` in type `<cannot stringify inst7800017A: {kind: Call, arg0: inst7800003F, arg1: inst_block78000081, type: type(TypeType)}>` that does not implement that interface [MissingImplInMemberAccess]
   // CHECK:STDERR:   var v: F(X) = {};
   // CHECK:STDERR:   ^~~~~~~~~~~
+  // CHECK:STDERR:
+  // CHECK:STDERR: fail_todo_dependent_call_type.carbon:[[@LINE+4]]:7: warning: binding `v` unused [UnusedBinding]
+  // CHECK:STDERR:   var v: F(X) = {};
+  // CHECK:STDERR:       ^
   // CHECK:STDERR:
   var v: F(X) = {};
 }

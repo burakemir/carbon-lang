@@ -17,7 +17,7 @@ library "[[@TEST_NAME]]";
 fn G(T:! type) {
   // We can initialize this without knowing T.
   //@dump-sem-ir-begin
-  var arr: array(T, 0) = ();
+  var unused arr: array(T, 0) = ();
   //@dump-sem-ir-end
 }
 
@@ -32,11 +32,11 @@ fn H() {
 library "[[@TEST_NAME]]";
 
 fn F(N:! i32) {
-  // CHECK:STDERR: fail_init_dependent_bound.carbon:[[@LINE+4]]:28: error: cannot initialize array with dependent bound from a list of initializers [ArrayInitDependentBound]
-  // CHECK:STDERR:   var arr: array(i32, N) = (1, 2, 3);
-  // CHECK:STDERR:                            ^~~~~~~~~
+  // CHECK:STDERR: fail_init_dependent_bound.carbon:[[@LINE+4]]:35: error: cannot initialize array with dependent bound from a list of initializers [ArrayInitDependentBound]
+  // CHECK:STDERR:   var unused arr: array(i32, N) = (1, 2, 3);
+  // CHECK:STDERR:                                   ^~~~~~~~~
   // CHECK:STDERR:
-  var arr: array(i32, N) = (1, 2, 3);
+  var unused arr: array(i32, N) = (1, 2, 3);
 }
 
 // --- fail_todo_init_template_dependent_bound.carbon
@@ -46,11 +46,11 @@ library "[[@TEST_NAME]]";
 // TODO: This should be valid.
 fn G(template N:! i32) {
   //@dump-sem-ir-begin
-  // CHECK:STDERR: fail_todo_init_template_dependent_bound.carbon:[[@LINE+4]]:12: error: cannot evaluate type expression [TypeExprEvaluationFailure]
-  // CHECK:STDERR:   var arr: array(i32, N) = (1, 2, 3);
-  // CHECK:STDERR:            ^~~~~~~~~~~~~
+  // CHECK:STDERR: fail_todo_init_template_dependent_bound.carbon:[[@LINE+4]]:19: error: cannot evaluate type expression [TypeExprEvaluationFailure]
+  // CHECK:STDERR:   var unused arr: array(i32, N) = (1, 2, 3);
+  // CHECK:STDERR:                   ^~~~~~~~~~~~~
   // CHECK:STDERR:
-  var arr: array(i32, N) = (1, 2, 3);
+  var unused arr: array(i32, N) = (1, 2, 3);
   //@dump-sem-ir-end
 }
 
@@ -90,11 +90,11 @@ fn H() { G(3); }
 // CHECK:STDOUT:   <elided>
 // CHECK:STDOUT:
 // CHECK:STDOUT: !definition:
-// CHECK:STDOUT:   %array_type.loc7_22.2: type = array_type constants.%int_0, %T.loc4_6.1 [symbolic = %array_type.loc7_22.2 (constants.%array_type.1b3)]
-// CHECK:STDOUT:   %require_complete: <witness> = require_complete_type %array_type.loc7_22.2 [symbolic = %require_complete (constants.%require_complete)]
-// CHECK:STDOUT:   %pattern_type: type = pattern_type %array_type.loc7_22.2 [symbolic = %pattern_type (constants.%pattern_type.bd6)]
-// CHECK:STDOUT:   %array: @G.%array_type.loc7_22.2 (%array_type.1b3) = tuple_value () [symbolic = %array (constants.%array.ca4)]
-// CHECK:STDOUT:   %Destroy.facet: %Destroy.type = facet_value %array_type.loc7_22.2, (constants.%custom_witness.809) [symbolic = %Destroy.facet (constants.%Destroy.facet.467)]
+// CHECK:STDOUT:   %array_type.loc7_29.2: type = array_type constants.%int_0, %T.loc4_6.1 [symbolic = %array_type.loc7_29.2 (constants.%array_type.1b3)]
+// CHECK:STDOUT:   %require_complete: <witness> = require_complete_type %array_type.loc7_29.2 [symbolic = %require_complete (constants.%require_complete)]
+// CHECK:STDOUT:   %pattern_type: type = pattern_type %array_type.loc7_29.2 [symbolic = %pattern_type (constants.%pattern_type.bd6)]
+// CHECK:STDOUT:   %array: @G.%array_type.loc7_29.2 (%array_type.1b3) = tuple_value () [symbolic = %array (constants.%array.ca4)]
+// CHECK:STDOUT:   %Destroy.facet: %Destroy.type = facet_value %array_type.loc7_29.2, (constants.%custom_witness.809) [symbolic = %Destroy.facet (constants.%Destroy.facet.467)]
 // CHECK:STDOUT:   %.loc7_3.2: type = fn_type_with_self_type constants.%Destroy.Op.type, %Destroy.facet [symbolic = %.loc7_3.2 (constants.%.2c6)]
 // CHECK:STDOUT:
 // CHECK:STDOUT:   fn() {
@@ -103,24 +103,24 @@ fn H() { G(3); }
 // CHECK:STDOUT:       %arr.patt: @G.%pattern_type (%pattern_type.bd6) = ref_binding_pattern arr [concrete]
 // CHECK:STDOUT:       %arr.var_patt: @G.%pattern_type (%pattern_type.bd6) = var_pattern %arr.patt [concrete]
 // CHECK:STDOUT:     }
-// CHECK:STDOUT:     %arr.var: ref @G.%array_type.loc7_22.2 (%array_type.1b3) = var %arr.var_patt
-// CHECK:STDOUT:     %.loc7_27.1: %empty_tuple.type = tuple_literal () [concrete = constants.%empty_tuple]
-// CHECK:STDOUT:     %.loc7_27.2: init @G.%array_type.loc7_22.2 (%array_type.1b3) to %arr.var = array_init () [symbolic = %array (constants.%array.ca4)]
-// CHECK:STDOUT:     %.loc7_3.1: init @G.%array_type.loc7_22.2 (%array_type.1b3) = converted %.loc7_27.1, %.loc7_27.2 [symbolic = %array (constants.%array.ca4)]
+// CHECK:STDOUT:     %arr.var: ref @G.%array_type.loc7_29.2 (%array_type.1b3) = var %arr.var_patt
+// CHECK:STDOUT:     %.loc7_34.1: %empty_tuple.type = tuple_literal () [concrete = constants.%empty_tuple]
+// CHECK:STDOUT:     %.loc7_34.2: init @G.%array_type.loc7_29.2 (%array_type.1b3) to %arr.var = array_init () [symbolic = %array (constants.%array.ca4)]
+// CHECK:STDOUT:     %.loc7_3.1: init @G.%array_type.loc7_29.2 (%array_type.1b3) = converted %.loc7_34.1, %.loc7_34.2 [symbolic = %array (constants.%array.ca4)]
 // CHECK:STDOUT:     assign %arr.var, %.loc7_3.1
-// CHECK:STDOUT:     %.loc7_22: type = splice_block %array_type.loc7_22.1 [symbolic = %array_type.loc7_22.2 (constants.%array_type.1b3)] {
+// CHECK:STDOUT:     %.loc7_29: type = splice_block %array_type.loc7_29.1 [symbolic = %array_type.loc7_29.2 (constants.%array_type.1b3)] {
 // CHECK:STDOUT:       %T.ref: type = name_ref T, %T.loc4_6.2 [symbolic = %T.loc4_6.1 (constants.%T)]
 // CHECK:STDOUT:       %int_0: Core.IntLiteral = int_value 0 [concrete = constants.%int_0]
-// CHECK:STDOUT:       %array_type.loc7_22.1: type = array_type %int_0, %T.ref [symbolic = %array_type.loc7_22.2 (constants.%array_type.1b3)]
+// CHECK:STDOUT:       %array_type.loc7_29.1: type = array_type %int_0, %T.ref [symbolic = %array_type.loc7_29.2 (constants.%array_type.1b3)]
 // CHECK:STDOUT:     }
-// CHECK:STDOUT:     %arr: ref @G.%array_type.loc7_22.2 (%array_type.1b3) = ref_binding arr, %arr.var
+// CHECK:STDOUT:     %arr: ref @G.%array_type.loc7_29.2 (%array_type.1b3) = ref_binding arr, %arr.var
 // CHECK:STDOUT:     %DestroyOp.bound: <bound method> = bound_method %arr.var, constants.%DestroyOp
 // CHECK:STDOUT:     %DestroyOp.call: init %empty_tuple.type = call %DestroyOp.bound(%arr.var)
 // CHECK:STDOUT:     <elided>
 // CHECK:STDOUT:   }
 // CHECK:STDOUT: }
 // CHECK:STDOUT:
-// CHECK:STDOUT: fn @DestroyOp(%self.param: @G.%array_type.loc7_22.2 (%array_type.1b3)) = "no_op";
+// CHECK:STDOUT: fn @DestroyOp(%self.param: @G.%array_type.loc7_29.2 (%array_type.1b3)) = "no_op";
 // CHECK:STDOUT:
 // CHECK:STDOUT: specific @G(constants.%T) {
 // CHECK:STDOUT:   %T.loc4_6.1 => constants.%T
@@ -130,7 +130,7 @@ fn H() { G(3); }
 // CHECK:STDOUT:   %T.loc4_6.1 => constants.%C
 // CHECK:STDOUT:
 // CHECK:STDOUT: !definition:
-// CHECK:STDOUT:   %array_type.loc7_22.2 => constants.%array_type.70a
+// CHECK:STDOUT:   %array_type.loc7_29.2 => constants.%array_type.70a
 // CHECK:STDOUT:   %require_complete => constants.%complete_type.95b
 // CHECK:STDOUT:   %pattern_type => constants.%pattern_type.f2c
 // CHECK:STDOUT:   %array => constants.%array.40f
@@ -185,7 +185,7 @@ fn H() { G(3); }
 // CHECK:STDOUT:   <elided>
 // CHECK:STDOUT:
 // CHECK:STDOUT: !definition:
-// CHECK:STDOUT:   %.loc11_23.2: <instruction> = convert_to_value_action %N.ref, Core.IntLiteral [template]
+// CHECK:STDOUT:   %.loc11_30.2: <instruction> = convert_to_value_action %N.ref, Core.IntLiteral [template]
 // CHECK:STDOUT:
 // CHECK:STDOUT:   fn() {
 // CHECK:STDOUT:   !entry:
@@ -197,7 +197,7 @@ fn H() { G(3); }
 // CHECK:STDOUT:     %int_1: Core.IntLiteral = int_value 1 [concrete = constants.%int_1]
 // CHECK:STDOUT:     %int_2: Core.IntLiteral = int_value 2 [concrete = constants.%int_2]
 // CHECK:STDOUT:     %int_3: Core.IntLiteral = int_value 3 [concrete = constants.%int_3.1ba]
-// CHECK:STDOUT:     %.loc11_36: %tuple.type = tuple_literal (%int_1, %int_2, %int_3) [concrete = constants.%tuple]
+// CHECK:STDOUT:     %.loc11_43: %tuple.type = tuple_literal (%int_1, %int_2, %int_3) [concrete = constants.%tuple]
 // CHECK:STDOUT:     assign %arr.var, <error>
 // CHECK:STDOUT:     <elided>
 // CHECK:STDOUT:     %arr: ref <error> = ref_binding arr, <error> [concrete = <error>]
@@ -213,6 +213,6 @@ fn H() { G(3); }
 // CHECK:STDOUT:   %N.loc5_15.1 => constants.%int_3.822
 // CHECK:STDOUT:
 // CHECK:STDOUT: !definition:
-// CHECK:STDOUT:   %.loc11_23.2 => constants.%inst.splice_block
+// CHECK:STDOUT:   %.loc11_30.2 => constants.%inst.splice_block
 // CHECK:STDOUT: }
 // CHECK:STDOUT:

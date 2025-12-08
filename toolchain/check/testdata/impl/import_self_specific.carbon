@@ -59,7 +59,7 @@ class D(N:! E) {}
 // impl for Z) should not be inappropriately added to this impl's generic eval
 // block.
 impl forall [N:! E] D(N) as I where .Assoc = () {
-  fn F(c: C(())) {}
+  fn F(unused c: C(())) {}
 }
 
 // CHECK:STDOUT: --- impl_def.carbon
@@ -503,11 +503,11 @@ impl forall [N:! E] D(N) as I where .Assoc = () {
 // CHECK:STDOUT:       %c.param_patt: %pattern_type.479 = value_param_pattern %c.patt, call_param0 [concrete]
 // CHECK:STDOUT:     } {
 // CHECK:STDOUT:       %c.param: %C.a44 = value_param call_param0
-// CHECK:STDOUT:       %.loc21_15.1: type = splice_block %C [concrete = constants.%C.a44] {
+// CHECK:STDOUT:       %.loc21_22.1: type = splice_block %C [concrete = constants.%C.a44] {
 // CHECK:STDOUT:         %C.ref: %C.type = name_ref C, imports.%Main.C [concrete = constants.%C.generic]
-// CHECK:STDOUT:         %.loc21_14: %empty_tuple.type = tuple_literal () [concrete = constants.%empty_tuple]
+// CHECK:STDOUT:         %.loc21_21: %empty_tuple.type = tuple_literal () [concrete = constants.%empty_tuple]
 // CHECK:STDOUT:         %Z.facet: %Z.type = facet_value constants.%empty_tuple.type, (constants.%Z.impl_witness.db1) [concrete = constants.%Z.facet.8bd]
-// CHECK:STDOUT:         %.loc21_15.2: %Z.type = converted %.loc21_14, %Z.facet [concrete = constants.%Z.facet.8bd]
+// CHECK:STDOUT:         %.loc21_22.2: %Z.type = converted %.loc21_21, %Z.facet [concrete = constants.%Z.facet.8bd]
 // CHECK:STDOUT:         %C: type = class_type @C, @C(constants.%Z.facet.8bd) [concrete = constants.%C.a44]
 // CHECK:STDOUT:       }
 // CHECK:STDOUT:       %c: %C.a44 = value_binding c, %c.param

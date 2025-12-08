@@ -18,6 +18,10 @@
 fn F() -> ref i32;
 
 fn G() {
+  // CHECK:STDERR: ref_return.carbon:[[@LINE+4]]:11: warning: binding `x` unused [UnusedBinding]
+  // CHECK:STDERR:   let ref x: i32 = F();
+  // CHECK:STDERR:           ^
+  // CHECK:STDERR:
   let ref x: i32 = F();
 }
 
@@ -70,7 +74,7 @@ fn G() {
 // CHECK:STDOUT:   }
 // CHECK:STDOUT:   %F.ref: %F.type = name_ref F, file.%F.decl [concrete = constants.%F]
 // CHECK:STDOUT:   %F.call: ref %i32 = call %F.ref()
-// CHECK:STDOUT:   %.loc7: type = splice_block %i32 [concrete = constants.%i32] {
+// CHECK:STDOUT:   %.loc11: type = splice_block %i32 [concrete = constants.%i32] {
 // CHECK:STDOUT:     %int_32: Core.IntLiteral = int_value 32 [concrete = constants.%int_32]
 // CHECK:STDOUT:     %i32: type = class_type @Int, @Int(constants.%int_32) [concrete = constants.%i32]
 // CHECK:STDOUT:   }

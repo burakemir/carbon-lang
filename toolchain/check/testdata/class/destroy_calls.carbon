@@ -20,9 +20,9 @@ class C {}
 
 //@dump-sem-ir-begin
 fn F() {
-  var a: A;
-  var b: B;
-  var c: C;
+  var unused a: A;
+  var unused b: B;
+  var unused c: C;
 }
 //@dump-sem-ir-end
 
@@ -36,10 +36,10 @@ class C {}
 
 //@dump-sem-ir-begin
 fn F() {
-  var a: A;
-  var b: B;
+  var unused a: A;
+  var unused b: B;
   if (true) {
-    var c: C;
+    var unused c: C;
   }
 }
 //@dump-sem-ir-end
@@ -71,7 +71,7 @@ class D(template T:! type) {}
 
 //@dump-sem-ir-begin
 fn F() {
-  var a: D(C);
+  var unused a: D(C);
 }
 //@dump-sem-ir-end
 
@@ -82,7 +82,7 @@ class C(template T:! type) {}
 
 //@dump-sem-ir-begin
 fn F(template T:! type) {
-  var v: C(T);
+  var unused v: C(T);
 }
 //@dump-sem-ir-end
 
@@ -374,10 +374,10 @@ fn G() { F({}); }
 // CHECK:STDOUT:   %T.loc6_15.1: type = symbolic_binding T, 0, template [template = %T.loc6_15.1 (constants.%T)]
 // CHECK:STDOUT:
 // CHECK:STDOUT: !definition:
-// CHECK:STDOUT:   %C.loc7_13.2: type = class_type @C, @C(%T.loc6_15.1) [template = %C.loc7_13.2 (constants.%C.5a3)]
-// CHECK:STDOUT:   %require_complete: <witness> = require_complete_type %C.loc7_13.2 [template = %require_complete (constants.%require_complete)]
-// CHECK:STDOUT:   %pattern_type: type = pattern_type %C.loc7_13.2 [template = %pattern_type (constants.%pattern_type.3d5)]
-// CHECK:STDOUT:   %Destroy.facet: %Destroy.type = facet_value %C.loc7_13.2, (constants.%custom_witness.809) [template = %Destroy.facet (constants.%Destroy.facet.45b)]
+// CHECK:STDOUT:   %C.loc7_20.2: type = class_type @C, @C(%T.loc6_15.1) [template = %C.loc7_20.2 (constants.%C.5a3)]
+// CHECK:STDOUT:   %require_complete: <witness> = require_complete_type %C.loc7_20.2 [template = %require_complete (constants.%require_complete)]
+// CHECK:STDOUT:   %pattern_type: type = pattern_type %C.loc7_20.2 [template = %pattern_type (constants.%pattern_type.3d5)]
+// CHECK:STDOUT:   %Destroy.facet: %Destroy.type = facet_value %C.loc7_20.2, (constants.%custom_witness.809) [template = %Destroy.facet (constants.%Destroy.facet.45b)]
 // CHECK:STDOUT:   %.loc7_3: type = fn_type_with_self_type constants.%Destroy.Op.type, %Destroy.facet [template = %.loc7_3 (constants.%.3c0)]
 // CHECK:STDOUT:
 // CHECK:STDOUT:   fn() {
@@ -386,20 +386,20 @@ fn G() { F({}); }
 // CHECK:STDOUT:       %v.patt: @F.%pattern_type (%pattern_type.3d5) = ref_binding_pattern v [concrete]
 // CHECK:STDOUT:       %v.var_patt: @F.%pattern_type (%pattern_type.3d5) = var_pattern %v.patt [concrete]
 // CHECK:STDOUT:     }
-// CHECK:STDOUT:     %v.var: ref @F.%C.loc7_13.2 (%C.5a3) = var %v.var_patt
-// CHECK:STDOUT:     %.loc7_13: type = splice_block %C.loc7_13.1 [template = %C.loc7_13.2 (constants.%C.5a3)] {
+// CHECK:STDOUT:     %v.var: ref @F.%C.loc7_20.2 (%C.5a3) = var %v.var_patt
+// CHECK:STDOUT:     %.loc7_20: type = splice_block %C.loc7_20.1 [template = %C.loc7_20.2 (constants.%C.5a3)] {
 // CHECK:STDOUT:       %C.ref: %C.type = name_ref C, file.%C.decl [concrete = constants.%C.generic]
 // CHECK:STDOUT:       %T.ref: type = name_ref T, %T.loc6_15.2 [template = %T.loc6_15.1 (constants.%T)]
-// CHECK:STDOUT:       %C.loc7_13.1: type = class_type @C, @C(constants.%T) [template = %C.loc7_13.2 (constants.%C.5a3)]
+// CHECK:STDOUT:       %C.loc7_20.1: type = class_type @C, @C(constants.%T) [template = %C.loc7_20.2 (constants.%C.5a3)]
 // CHECK:STDOUT:     }
-// CHECK:STDOUT:     %v: ref @F.%C.loc7_13.2 (%C.5a3) = ref_binding v, %v.var
+// CHECK:STDOUT:     %v: ref @F.%C.loc7_20.2 (%C.5a3) = ref_binding v, %v.var
 // CHECK:STDOUT:     %DestroyOp.bound: <bound method> = bound_method %v.var, constants.%DestroyOp
 // CHECK:STDOUT:     %DestroyOp.call: init %empty_tuple.type = call %DestroyOp.bound(%v.var)
 // CHECK:STDOUT:     return
 // CHECK:STDOUT:   }
 // CHECK:STDOUT: }
 // CHECK:STDOUT:
-// CHECK:STDOUT: fn @DestroyOp(%self.param: @F.%C.loc7_13.2 (%C.5a3)) = "no_op";
+// CHECK:STDOUT: fn @DestroyOp(%self.param: @F.%C.loc7_20.2 (%C.5a3)) = "no_op";
 // CHECK:STDOUT:
 // CHECK:STDOUT: specific @F(constants.%T) {
 // CHECK:STDOUT:   %T.loc6_15.1 => constants.%T
@@ -409,7 +409,7 @@ fn G() { F({}); }
 // CHECK:STDOUT:   %T.loc6_15.1 => constants.%empty_struct_type
 // CHECK:STDOUT:
 // CHECK:STDOUT: !definition:
-// CHECK:STDOUT:   %C.loc7_13.2 => constants.%C.850
+// CHECK:STDOUT:   %C.loc7_20.2 => constants.%C.850
 // CHECK:STDOUT:   %require_complete => constants.%complete_type
 // CHECK:STDOUT:   %pattern_type => constants.%pattern_type.526
 // CHECK:STDOUT:   %Destroy.facet => constants.%Destroy.facet.bc0

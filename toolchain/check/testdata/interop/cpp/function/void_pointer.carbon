@@ -34,7 +34,7 @@ auto foo() -> void* _Nonnull;
 
 fn F() {
   //@dump-sem-ir-begin
-  let output: Cpp.void* = Cpp.foo();
+  let unused output: Cpp.void* = Cpp.foo();
   //@dump-sem-ir-end
 }
 
@@ -76,7 +76,7 @@ auto foo() -> void*;
 
 fn F() {
   //@dump-sem-ir-begin
-  let output: Core.Optional(Cpp.void*) = Cpp.foo();
+  let unused output: Core.Optional(Cpp.void*) = Cpp.foo();
   //@dump-sem-ir-end
 }
 
@@ -178,17 +178,17 @@ fn F() {
 // CHECK:STDOUT:   name_binding_decl {
 // CHECK:STDOUT:     %output.patt: %pattern_type = value_binding_pattern output [concrete]
 // CHECK:STDOUT:   }
-// CHECK:STDOUT:   %Cpp.ref.loc10_27: <namespace> = name_ref Cpp, imports.%Cpp [concrete = imports.%Cpp]
+// CHECK:STDOUT:   %Cpp.ref.loc10_34: <namespace> = name_ref Cpp, imports.%Cpp [concrete = imports.%Cpp]
 // CHECK:STDOUT:   %foo.ref: %foo.cpp_overload_set.type = name_ref foo, imports.%foo.cpp_overload_set.value [concrete = constants.%foo.cpp_overload_set.value]
 // CHECK:STDOUT:   %foo.call: init %ptr = call imports.%foo.decl()
-// CHECK:STDOUT:   %.loc10_23: type = splice_block %ptr [concrete = constants.%ptr] {
-// CHECK:STDOUT:     %Cpp.ref.loc10_15: <namespace> = name_ref Cpp, imports.%Cpp [concrete = imports.%Cpp]
+// CHECK:STDOUT:   %.loc10_30: type = splice_block %ptr [concrete = constants.%ptr] {
+// CHECK:STDOUT:     %Cpp.ref.loc10_22: <namespace> = name_ref Cpp, imports.%Cpp [concrete = imports.%Cpp]
 // CHECK:STDOUT:     %void.ref: type = name_ref void, constants.%Cpp.void [concrete = constants.%Cpp.void]
 // CHECK:STDOUT:     %ptr: type = ptr_type %void.ref [concrete = constants.%ptr]
 // CHECK:STDOUT:   }
-// CHECK:STDOUT:   %.loc10_35.1: %ptr = value_of_initializer %foo.call
-// CHECK:STDOUT:   %.loc10_35.2: %ptr = converted %foo.call, %.loc10_35.1
-// CHECK:STDOUT:   %output: %ptr = value_binding output, %.loc10_35.2
+// CHECK:STDOUT:   %.loc10_42.1: %ptr = value_of_initializer %foo.call
+// CHECK:STDOUT:   %.loc10_42.2: %ptr = converted %foo.call, %.loc10_42.1
+// CHECK:STDOUT:   %output: %ptr = value_binding output, %.loc10_42.2
 // CHECK:STDOUT:   <elided>
 // CHECK:STDOUT: }
 // CHECK:STDOUT:
@@ -469,25 +469,25 @@ fn F() {
 // CHECK:STDOUT:   name_binding_decl {
 // CHECK:STDOUT:     %output.patt: %pattern_type.56e = value_binding_pattern output [concrete]
 // CHECK:STDOUT:   }
-// CHECK:STDOUT:   %Cpp.ref.loc10_42: <namespace> = name_ref Cpp, imports.%Cpp [concrete = imports.%Cpp]
+// CHECK:STDOUT:   %Cpp.ref.loc10_49: <namespace> = name_ref Cpp, imports.%Cpp [concrete = imports.%Cpp]
 // CHECK:STDOUT:   %foo.ref: %foo.cpp_overload_set.type = name_ref foo, imports.%foo.cpp_overload_set.value [concrete = constants.%foo.cpp_overload_set.value]
 // CHECK:STDOUT:   %foo.call: init %Optional.4eb = call imports.%foo.decl()
-// CHECK:STDOUT:   %.loc10_38.1: type = splice_block %Optional [concrete = constants.%Optional.4eb] {
+// CHECK:STDOUT:   %.loc10_45.1: type = splice_block %Optional [concrete = constants.%Optional.4eb] {
 // CHECK:STDOUT:     %Core.ref: <namespace> = name_ref Core, imports.%Core [concrete = imports.%Core]
 // CHECK:STDOUT:     %Optional.ref: %Optional.type = name_ref Optional, imports.%Core.Optional [concrete = constants.%Optional.generic]
-// CHECK:STDOUT:     %Cpp.ref.loc10_29: <namespace> = name_ref Cpp, imports.%Cpp [concrete = imports.%Cpp]
+// CHECK:STDOUT:     %Cpp.ref.loc10_36: <namespace> = name_ref Cpp, imports.%Cpp [concrete = imports.%Cpp]
 // CHECK:STDOUT:     %void.ref: type = name_ref void, constants.%Cpp.void [concrete = constants.%Cpp.void]
 // CHECK:STDOUT:     %ptr: type = ptr_type %void.ref [concrete = constants.%ptr.874]
 // CHECK:STDOUT:     %OptionalStorage.facet: %OptionalStorage.type = facet_value %ptr, (constants.%OptionalStorage.impl_witness.818) [concrete = constants.%OptionalStorage.facet]
-// CHECK:STDOUT:     %.loc10_38.2: %OptionalStorage.type = converted %ptr, %OptionalStorage.facet [concrete = constants.%OptionalStorage.facet]
+// CHECK:STDOUT:     %.loc10_45.2: %OptionalStorage.type = converted %ptr, %OptionalStorage.facet [concrete = constants.%OptionalStorage.facet]
 // CHECK:STDOUT:     %Optional: type = class_type @Optional, @Optional(constants.%OptionalStorage.facet) [concrete = constants.%Optional.4eb]
 // CHECK:STDOUT:   }
-// CHECK:STDOUT:   %.loc10_50.1: ref %Optional.4eb = temporary_storage
-// CHECK:STDOUT:   %.loc10_50.2: ref %Optional.4eb = temporary %.loc10_50.1, %foo.call
-// CHECK:STDOUT:   %.loc10_50.3: %Optional.4eb = acquire_value %.loc10_50.2
-// CHECK:STDOUT:   %output: %Optional.4eb = value_binding output, %.loc10_50.3
-// CHECK:STDOUT:   %DestroyOp.bound: <bound method> = bound_method %.loc10_50.2, constants.%DestroyOp.b0ebf8.4
-// CHECK:STDOUT:   %DestroyOp.call: init %empty_tuple.type = call %DestroyOp.bound(%.loc10_50.2)
+// CHECK:STDOUT:   %.loc10_57.1: ref %Optional.4eb = temporary_storage
+// CHECK:STDOUT:   %.loc10_57.2: ref %Optional.4eb = temporary %.loc10_57.1, %foo.call
+// CHECK:STDOUT:   %.loc10_57.3: %Optional.4eb = acquire_value %.loc10_57.2
+// CHECK:STDOUT:   %output: %Optional.4eb = value_binding output, %.loc10_57.3
+// CHECK:STDOUT:   %DestroyOp.bound: <bound method> = bound_method %.loc10_57.2, constants.%DestroyOp.b0ebf8.4
+// CHECK:STDOUT:   %DestroyOp.call: init %empty_tuple.type = call %DestroyOp.bound(%.loc10_57.2)
 // CHECK:STDOUT:   <elided>
 // CHECK:STDOUT: }
 // CHECK:STDOUT:

@@ -21,11 +21,11 @@ class C {}
 class D {}
 
 impl C as UseSelf {
-  fn F[self: C](x: C) -> C { return {}; }
+  fn F[unused self: C](unused x: C) -> C { return {}; }
 }
 
 impl D as UseSelf {
-  fn F[self: Self](x: Self) -> Self { return {}; }
+  fn F[unused self: Self](unused x: Self) -> Self { return {}; }
 }
 
 interface SelfNested {
@@ -218,13 +218,13 @@ impl D as SelfNested {
 // CHECK:STDOUT:     %return.patt: %pattern_type.7c7 = return_slot_pattern [concrete]
 // CHECK:STDOUT:     %return.param_patt: %pattern_type.7c7 = out_param_pattern %return.patt, call_param2 [concrete]
 // CHECK:STDOUT:   } {
-// CHECK:STDOUT:     %C.ref.loc24_26: type = name_ref C, file.%C.decl [concrete = constants.%C]
-// CHECK:STDOUT:     %.loc24_26: form = init_form %C.ref.loc24_26, call_param2 [concrete = constants.%.355]
+// CHECK:STDOUT:     %C.ref.loc24_40: type = name_ref C, file.%C.decl [concrete = constants.%C]
+// CHECK:STDOUT:     %.loc24_40: form = init_form %C.ref.loc24_40, call_param2 [concrete = constants.%.355]
 // CHECK:STDOUT:     %self.param: %C = value_param call_param0
-// CHECK:STDOUT:     %C.ref.loc24_14: type = name_ref C, file.%C.decl [concrete = constants.%C]
+// CHECK:STDOUT:     %C.ref.loc24_21: type = name_ref C, file.%C.decl [concrete = constants.%C]
 // CHECK:STDOUT:     %self: %C = value_binding self, %self.param
 // CHECK:STDOUT:     %x.param: %C = value_param call_param1
-// CHECK:STDOUT:     %C.ref.loc24_20: type = name_ref C, file.%C.decl [concrete = constants.%C]
+// CHECK:STDOUT:     %C.ref.loc24_34: type = name_ref C, file.%C.decl [concrete = constants.%C]
 // CHECK:STDOUT:     %x: %C = value_binding x, %x.param
 // CHECK:STDOUT:     %return.param: ref %C = out_param call_param2
 // CHECK:STDOUT:     %return: ref %C = return_slot %return.param
@@ -247,13 +247,13 @@ impl D as SelfNested {
 // CHECK:STDOUT:     %return.patt: %pattern_type.9c8 = return_slot_pattern [concrete]
 // CHECK:STDOUT:     %return.param_patt: %pattern_type.9c8 = out_param_pattern %return.patt, call_param2 [concrete]
 // CHECK:STDOUT:   } {
-// CHECK:STDOUT:     %Self.ref.loc28_32: type = name_ref Self, @D.as.UseSelf.impl.%D.ref [concrete = constants.%D]
-// CHECK:STDOUT:     %.loc28_32: form = init_form %Self.ref.loc28_32, call_param2 [concrete = constants.%.802]
+// CHECK:STDOUT:     %Self.ref.loc28_46: type = name_ref Self, @D.as.UseSelf.impl.%D.ref [concrete = constants.%D]
+// CHECK:STDOUT:     %.loc28_46: form = init_form %Self.ref.loc28_46, call_param2 [concrete = constants.%.802]
 // CHECK:STDOUT:     %self.param: %D = value_param call_param0
-// CHECK:STDOUT:     %Self.ref.loc28_14: type = name_ref Self, @D.as.UseSelf.impl.%D.ref [concrete = constants.%D]
+// CHECK:STDOUT:     %Self.ref.loc28_21: type = name_ref Self, @D.as.UseSelf.impl.%D.ref [concrete = constants.%D]
 // CHECK:STDOUT:     %self: %D = value_binding self, %self.param
 // CHECK:STDOUT:     %x.param: %D = value_param call_param1
-// CHECK:STDOUT:     %Self.ref.loc28_23: type = name_ref Self, @D.as.UseSelf.impl.%D.ref [concrete = constants.%D]
+// CHECK:STDOUT:     %Self.ref.loc28_37: type = name_ref Self, @D.as.UseSelf.impl.%D.ref [concrete = constants.%D]
 // CHECK:STDOUT:     %x: %D = value_binding x, %x.param
 // CHECK:STDOUT:     %return.param: ref %D = out_param call_param2
 // CHECK:STDOUT:     %return: ref %D = return_slot %return.param
@@ -346,18 +346,18 @@ impl D as SelfNested {
 // CHECK:STDOUT:
 // CHECK:STDOUT: fn @C.as.UseSelf.impl.F(%self.param: %C, %x.param: %C) -> out %return.param: %C {
 // CHECK:STDOUT: !entry:
-// CHECK:STDOUT:   %.loc24_38.1: %empty_struct_type = struct_literal () [concrete = constants.%empty_struct]
-// CHECK:STDOUT:   %.loc24_38.2: init %C to %return.param = class_init () [concrete = constants.%C.val]
-// CHECK:STDOUT:   %.loc24_39: init %C = converted %.loc24_38.1, %.loc24_38.2 [concrete = constants.%C.val]
-// CHECK:STDOUT:   return %.loc24_39 to %return.param
+// CHECK:STDOUT:   %.loc24_52.1: %empty_struct_type = struct_literal () [concrete = constants.%empty_struct]
+// CHECK:STDOUT:   %.loc24_52.2: init %C to %return.param = class_init () [concrete = constants.%C.val]
+// CHECK:STDOUT:   %.loc24_53: init %C = converted %.loc24_52.1, %.loc24_52.2 [concrete = constants.%C.val]
+// CHECK:STDOUT:   return %.loc24_53 to %return.param
 // CHECK:STDOUT: }
 // CHECK:STDOUT:
 // CHECK:STDOUT: fn @D.as.UseSelf.impl.F(%self.param: %D, %x.param: %D) -> out %return.param: %D {
 // CHECK:STDOUT: !entry:
-// CHECK:STDOUT:   %.loc28_47.1: %empty_struct_type = struct_literal () [concrete = constants.%empty_struct]
-// CHECK:STDOUT:   %.loc28_47.2: init %D to %return.param = class_init () [concrete = constants.%D.val]
-// CHECK:STDOUT:   %.loc28_48: init %D = converted %.loc28_47.1, %.loc28_47.2 [concrete = constants.%D.val]
-// CHECK:STDOUT:   return %.loc28_48 to %return.param
+// CHECK:STDOUT:   %.loc28_61.1: %empty_struct_type = struct_literal () [concrete = constants.%empty_struct]
+// CHECK:STDOUT:   %.loc28_61.2: init %D to %return.param = class_init () [concrete = constants.%D.val]
+// CHECK:STDOUT:   %.loc28_62: init %D = converted %.loc28_61.1, %.loc28_61.2 [concrete = constants.%D.val]
+// CHECK:STDOUT:   return %.loc28_62 to %return.param
 // CHECK:STDOUT: }
 // CHECK:STDOUT:
 // CHECK:STDOUT: generic fn @SelfNested.F(@SelfNested.%Self: %SelfNested.type) {

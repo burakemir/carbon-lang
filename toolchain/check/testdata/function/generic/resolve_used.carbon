@@ -24,10 +24,10 @@ fn ErrorIfNIsZero(N:! Core.IntLiteral()) {
   // CHECK:STDERR: min_prelude/parts/int.carbon:11:9: error: integer type width of 0 is not positive [IntWidthNotPositive]
   // CHECK:STDERR:   adapt MakeInt(N);
   // CHECK:STDERR:         ^~~~~~~~~~
-  // CHECK:STDERR: fail_todo_call_monomorphization_error.carbon:[[@LINE+3]]:10: note: in `i0` used here [ResolvingSpecificHere]
-  // CHECK:STDERR:   var v: Core.Int(N);
-  // CHECK:STDERR:          ^~~~~~~~~~~
-  var v: Core.Int(N);
+  // CHECK:STDERR: fail_todo_call_monomorphization_error.carbon:[[@LINE+3]]:17: note: in `i0` used here [ResolvingSpecificHere]
+  // CHECK:STDERR:   var unused v: Core.Int(N);
+  // CHECK:STDERR:                 ^~~~~~~~~~~
+  var unused v: Core.Int(N);
 }
 
 fn CallNegative() {
@@ -113,10 +113,10 @@ fn CallNegative() {
 // CHECK:STDOUT:   %N.loc4_19.1: Core.IntLiteral = symbolic_binding N, 0 [symbolic = %N.loc4_19.1 (constants.%N)]
 // CHECK:STDOUT:
 // CHECK:STDOUT: !definition:
-// CHECK:STDOUT:   %Int.loc15_20.2: type = class_type @Int, @Int(%N.loc4_19.1) [symbolic = %Int.loc15_20.2 (constants.%Int)]
-// CHECK:STDOUT:   %require_complete: <witness> = require_complete_type %Int.loc15_20.2 [symbolic = %require_complete (constants.%require_complete.901)]
-// CHECK:STDOUT:   %pattern_type: type = pattern_type %Int.loc15_20.2 [symbolic = %pattern_type (constants.%pattern_type.764)]
-// CHECK:STDOUT:   %Destroy.facet: %Destroy.type = facet_value %Int.loc15_20.2, (constants.%custom_witness.809) [symbolic = %Destroy.facet (constants.%Destroy.facet.3e3)]
+// CHECK:STDOUT:   %Int.loc15_27.2: type = class_type @Int, @Int(%N.loc4_19.1) [symbolic = %Int.loc15_27.2 (constants.%Int)]
+// CHECK:STDOUT:   %require_complete: <witness> = require_complete_type %Int.loc15_27.2 [symbolic = %require_complete (constants.%require_complete.901)]
+// CHECK:STDOUT:   %pattern_type: type = pattern_type %Int.loc15_27.2 [symbolic = %pattern_type (constants.%pattern_type.764)]
+// CHECK:STDOUT:   %Destroy.facet: %Destroy.type = facet_value %Int.loc15_27.2, (constants.%custom_witness.809) [symbolic = %Destroy.facet (constants.%Destroy.facet.3e3)]
 // CHECK:STDOUT:   %.loc15_3: type = fn_type_with_self_type constants.%Destroy.Op.type, %Destroy.facet [symbolic = %.loc15_3 (constants.%.623)]
 // CHECK:STDOUT:
 // CHECK:STDOUT:   fn() {
@@ -125,21 +125,21 @@ fn CallNegative() {
 // CHECK:STDOUT:       %v.patt: @ErrorIfNIsZero.%pattern_type (%pattern_type.764) = ref_binding_pattern v [concrete]
 // CHECK:STDOUT:       %v.var_patt: @ErrorIfNIsZero.%pattern_type (%pattern_type.764) = var_pattern %v.patt [concrete]
 // CHECK:STDOUT:     }
-// CHECK:STDOUT:     %v.var: ref @ErrorIfNIsZero.%Int.loc15_20.2 (%Int) = var %v.var_patt
-// CHECK:STDOUT:     %.loc15_20: type = splice_block %Int.loc15_20.1 [symbolic = %Int.loc15_20.2 (constants.%Int)] {
+// CHECK:STDOUT:     %v.var: ref @ErrorIfNIsZero.%Int.loc15_27.2 (%Int) = var %v.var_patt
+// CHECK:STDOUT:     %.loc15_27: type = splice_block %Int.loc15_27.1 [symbolic = %Int.loc15_27.2 (constants.%Int)] {
 // CHECK:STDOUT:       %Core.ref.loc15: <namespace> = name_ref Core, imports.%Core [concrete = imports.%Core]
 // CHECK:STDOUT:       %Int.ref: %Int.type = name_ref Int, imports.%Core.Int [concrete = constants.%Int.generic]
 // CHECK:STDOUT:       %N.ref: Core.IntLiteral = name_ref N, %N.loc4_19.2 [symbolic = %N.loc4_19.1 (constants.%N)]
-// CHECK:STDOUT:       %Int.loc15_20.1: type = class_type @Int, @Int(constants.%N) [symbolic = %Int.loc15_20.2 (constants.%Int)]
+// CHECK:STDOUT:       %Int.loc15_27.1: type = class_type @Int, @Int(constants.%N) [symbolic = %Int.loc15_27.2 (constants.%Int)]
 // CHECK:STDOUT:     }
-// CHECK:STDOUT:     %v: ref @ErrorIfNIsZero.%Int.loc15_20.2 (%Int) = ref_binding v, %v.var
+// CHECK:STDOUT:     %v: ref @ErrorIfNIsZero.%Int.loc15_27.2 (%Int) = ref_binding v, %v.var
 // CHECK:STDOUT:     %DestroyOp.bound: <bound method> = bound_method %v.var, constants.%DestroyOp
 // CHECK:STDOUT:     %DestroyOp.call: init %empty_tuple.type = call %DestroyOp.bound(%v.var)
 // CHECK:STDOUT:     return
 // CHECK:STDOUT:   }
 // CHECK:STDOUT: }
 // CHECK:STDOUT:
-// CHECK:STDOUT: fn @DestroyOp(%self.param: @ErrorIfNIsZero.%Int.loc15_20.2 (%Int)) = "no_op";
+// CHECK:STDOUT: fn @DestroyOp(%self.param: @ErrorIfNIsZero.%Int.loc15_27.2 (%Int)) = "no_op";
 // CHECK:STDOUT:
 // CHECK:STDOUT: fn @CallNegative() {
 // CHECK:STDOUT: !entry:
@@ -158,7 +158,7 @@ fn CallNegative() {
 // CHECK:STDOUT:   %N.loc4_19.1 => constants.%int_0
 // CHECK:STDOUT:
 // CHECK:STDOUT: !definition:
-// CHECK:STDOUT:   %Int.loc15_20.2 => constants.%i0
+// CHECK:STDOUT:   %Int.loc15_27.2 => constants.%i0
 // CHECK:STDOUT:   %require_complete => constants.%complete_type.d94
 // CHECK:STDOUT:   %pattern_type => constants.%pattern_type.47b
 // CHECK:STDOUT:   %Destroy.facet => constants.%Destroy.facet.7e1

@@ -10,22 +10,19 @@
 #include "toolchain/check/control_flow.h"
 #include "toolchain/check/convert.h"
 #include "toolchain/check/decl_introducer_state.h"
-#include "toolchain/check/decl_name_stack.h"
-#include "toolchain/check/function.h"
 #include "toolchain/check/generic.h"
 #include "toolchain/check/handle.h"
-#include "toolchain/check/import.h"
 #include "toolchain/check/import_ref.h"
-#include "toolchain/check/inst.h"
 #include "toolchain/check/interface.h"
-#include "toolchain/check/keyword_modifier_set.h"
 #include "toolchain/check/literal.h"
 #include "toolchain/check/merge.h"
 #include "toolchain/check/modifiers.h"
 #include "toolchain/check/name_component.h"
 #include "toolchain/check/name_lookup.h"
+#include "toolchain/check/return.h"
 #include "toolchain/check/type.h"
 #include "toolchain/check/type_completion.h"
+#include "toolchain/check/unused.h"
 #include "toolchain/lex/token_kind.h"
 #include "toolchain/parse/node_ids.h"
 #include "toolchain/sem_ir/builtin_function_kind.h"
@@ -511,8 +508,73 @@ static auto BuildFunctionDecl(Context& context,
   return {function_decl.function_id, decl_id};
 }
 
+// Checks that "unused" marker is only used in definitions, and emits a
+// diagnostic for every binding that is marked unused.
+static auto CheckUnusedBindingsInPattern(Context& context,
+                                         SemIR::InstId pattern_id) -> void {
+  llvm::SmallVector<SemIR::InstId> work_list;
+  work_list.push_back(pattern_id);
+
+  while (!work_list.empty()) {
+    auto current_id = work_list.pop_back_val();
+    auto inst = context.insts().Get(current_id);
+    CARBON_KIND_SWITCH(inst) {
+      case SemIR::OutParamPattern::Kind:
+      case SemIR::RefParamPattern::Kind:
+      case SemIR::ValueParamPattern::Kind:
+      case SemIR::VarParamPattern::Kind: {
+        auto param = inst.As<SemIR::AnyParamPattern>();
+        work_list.push_back(param.subpattern_id);
+        break;
+      }
+      case SemIR::RefBindingPattern::Kind:
+      case SemIR::SymbolicBindingPattern::Kind:
+      case SemIR::ValueBindingPattern::Kind: {
+        auto bind = inst.As<SemIR::AnyBindingPattern>();
+        auto& entity_name = context.entity_names().Get(bind.entity_name_id);
+        // We need special treatment for the name "_" which is implicitly
+        // unused but actually permitted in declarations.
+        if (entity_name.is_unused &&
+            entity_name.name_id != SemIR::NameId::Underscore) {
+          CARBON_DIAGNOSTIC(UnusedModifierOnDeclaration, Error,
+                            "`unused` modifier on declaration");
+          context.emitter().Emit(current_id, UnusedModifierOnDeclaration);
+        }
+        break;
+      }
+      case CARBON_KIND(SemIR::VarPattern var_pattern): {
+        work_list.push_back(var_pattern.subpattern_id);
+        break;
+      }
+      case CARBON_KIND(SemIR::TuplePattern tuple_pattern): {
+        auto elements = context.inst_blocks().Get(tuple_pattern.elements_id);
+        for (auto element_id : llvm::reverse(elements)) {
+          work_list.push_back(element_id);
+        }
+        break;
+      }
+      default:
+        break;
+    }
+  }
+}
+
+static auto DiagnoseUnusedMarkersInDeclaration(Context& context,
+                                               SemIR::FunctionId function_id)
+    -> void {
+  const auto& function = context.functions().Get(function_id);
+  if (function.param_patterns_id.has_value()) {
+    for (auto pattern_id :
+         context.inst_blocks().Get(function.param_patterns_id)) {
+      CheckUnusedBindingsInPattern(context, pattern_id);
+    }
+  }
+}
+
 auto HandleParseNode(Context& context, Parse::FunctionDeclId node_id) -> bool {
-  BuildFunctionDecl(context, node_id, /*is_definition=*/false);
+  auto [function_id, decl_id] =
+      BuildFunctionDecl(context, node_id, /*is_definition=*/false);
+  DiagnoseUnusedMarkersInDeclaration(context, function_id);
   context.decl_name_stack().PopScope();
   return true;
 }
@@ -576,7 +638,7 @@ auto HandleParseNode(Context& context, Parse::FunctionDefinitionId node_id)
   }
 
   FinishFunctionDefinition(context, function_id);
-  context.decl_name_stack().PopScope();
+  context.decl_name_stack().PopScope(/*check_unused=*/true);
 
   return true;
 }

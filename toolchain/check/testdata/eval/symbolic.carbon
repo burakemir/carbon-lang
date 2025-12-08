@@ -20,6 +20,10 @@ eval fn F(B:! bool) -> type {
 }
 
 fn G(B:! bool) {
+  // CHECK:STDERR: symbolic_call_to_eval_fn.carbon:[[@LINE+4]]:7: warning: binding `n` unused [UnusedBinding]
+  // CHECK:STDERR:   let n: F(B) = ({}, {});
+  // CHECK:STDERR:       ^
+  // CHECK:STDERR:
   let n: F(B) = ({}, {});
 }
 
@@ -29,7 +33,6 @@ fn H() {
 
 
 // --- fail_symbolic_call_to_eval_fn_invalid_instantiation.carbon
-// CHECK:STDERR: fail_symbolic_call_to_eval_fn_invalid_instantiation.carbon: error: cannot initialize tuple of 0 elements from tuple with 2 elements [TupleInitElementCountMismatch]
 // TODO: Provide a location for the error message.
 
 library "[[@TEST_NAME]]";
@@ -40,6 +43,11 @@ eval fn F(B:! bool) -> type {
 }
 
 fn G(B:! bool) {
+  // CHECK:STDERR: fail_symbolic_call_to_eval_fn_invalid_instantiation.carbon:[[@LINE+5]]:7: warning: binding `n` unused [UnusedBinding]
+  // CHECK:STDERR:   let n: F(B) = ({}, {});
+  // CHECK:STDERR:       ^
+  // CHECK:STDERR:
+  // CHECK:STDERR: fail_symbolic_call_to_eval_fn_invalid_instantiation.carbon: error: cannot initialize tuple of 0 elements from tuple with 2 elements [TupleInitElementCountMismatch]
   let n: F(B) = ({}, {});
 }
 
