@@ -56,7 +56,7 @@ impl ImplsGeneric as Generic(GenericParam) {
   fn F() {}
 }
 
-fn CallGenericMethod[T:! type](U:! Generic(T), t: T) {}
+fn CallGenericMethod[T:! type](U:! Generic(T), unused t: T) {}
 
 fn G() {
   CallGenericMethod(ImplsGeneric, {} as GenericParam);
@@ -456,8 +456,8 @@ fn G() {
 // CHECK:STDOUT:   %CallGenericMethod.decl: %CallGenericMethod.type = fn_decl @CallGenericMethod [concrete = constants.%CallGenericMethod] {
 // CHECK:STDOUT:     %T.patt: %pattern_type.98f = symbolic_binding_pattern T, 0 [concrete]
 // CHECK:STDOUT:     %U.patt: @CallGenericMethod.%pattern_type.loc15_32 (%pattern_type.e11) = symbolic_binding_pattern U, 1 [concrete]
-// CHECK:STDOUT:     %t.patt: @CallGenericMethod.%pattern_type.loc15_48 (%pattern_type.e68) = value_binding_pattern t [concrete]
-// CHECK:STDOUT:     %t.param_patt: @CallGenericMethod.%pattern_type.loc15_48 (%pattern_type.e68) = value_param_pattern %t.patt, call_param0 [concrete]
+// CHECK:STDOUT:     %t.patt: @CallGenericMethod.%pattern_type.loc15_55 (%pattern_type.e68) = value_binding_pattern t [concrete]
+// CHECK:STDOUT:     %t.param_patt: @CallGenericMethod.%pattern_type.loc15_55 (%pattern_type.e68) = value_param_pattern %t.patt, call_param0 [concrete]
 // CHECK:STDOUT:   } {
 // CHECK:STDOUT:     %.Self.1: %type = symbolic_binding .Self [symbolic_self = constants.%.Self]
 // CHECK:STDOUT:     %T.loc15_22.2: type = symbolic_binding T, 0 [symbolic = %T.loc15_22.1 (constants.%T)]
@@ -469,7 +469,7 @@ fn G() {
 // CHECK:STDOUT:     }
 // CHECK:STDOUT:     %U.loc15_32.2: @CallGenericMethod.%Generic.type.loc15_45.1 (%Generic.type.68bb8d.2) = symbolic_binding U, 1 [symbolic = %U.loc15_32.1 (constants.%U)]
 // CHECK:STDOUT:     %t.param: @CallGenericMethod.%T.loc15_22.1 (%T) = value_param call_param0
-// CHECK:STDOUT:     %T.ref.loc15_51: type = name_ref T, %T.loc15_22.2 [symbolic = %T.loc15_22.1 (constants.%T)]
+// CHECK:STDOUT:     %T.ref.loc15_58: type = name_ref T, %T.loc15_22.2 [symbolic = %T.loc15_22.1 (constants.%T)]
 // CHECK:STDOUT:     %t: @CallGenericMethod.%T.loc15_22.1 (%T) = value_binding t, %t.param
 // CHECK:STDOUT:   }
 // CHECK:STDOUT:   %G.decl: %G.type = fn_decl @G [concrete = constants.%G] {} {}
@@ -538,7 +538,7 @@ fn G() {
 // CHECK:STDOUT:   %Generic.type.loc15_45.1: type = facet_type <@Generic, @Generic(%T.loc15_22.1)> [symbolic = %Generic.type.loc15_45.1 (constants.%Generic.type.68bb8d.2)]
 // CHECK:STDOUT:   %U.loc15_32.1: @CallGenericMethod.%Generic.type.loc15_45.1 (%Generic.type.68bb8d.2) = symbolic_binding U, 1 [symbolic = %U.loc15_32.1 (constants.%U)]
 // CHECK:STDOUT:   %pattern_type.loc15_32: type = pattern_type %Generic.type.loc15_45.1 [symbolic = %pattern_type.loc15_32 (constants.%pattern_type.e11)]
-// CHECK:STDOUT:   %pattern_type.loc15_48: type = pattern_type %T.loc15_22.1 [symbolic = %pattern_type.loc15_48 (constants.%pattern_type.e68)]
+// CHECK:STDOUT:   %pattern_type.loc15_55: type = pattern_type %T.loc15_22.1 [symbolic = %pattern_type.loc15_55 (constants.%pattern_type.e68)]
 // CHECK:STDOUT:
 // CHECK:STDOUT: !definition:
 // CHECK:STDOUT:   %require_complete: <witness> = require_complete_type %T.loc15_22.1 [symbolic = %require_complete (constants.%require_complete.4b7)]
@@ -600,7 +600,7 @@ fn G() {
 // CHECK:STDOUT:   %Generic.type.loc15_45.1 => constants.%Generic.type.68bb8d.2
 // CHECK:STDOUT:   %U.loc15_32.1 => constants.%U
 // CHECK:STDOUT:   %pattern_type.loc15_32 => constants.%pattern_type.e11
-// CHECK:STDOUT:   %pattern_type.loc15_48 => constants.%pattern_type.e68
+// CHECK:STDOUT:   %pattern_type.loc15_55 => constants.%pattern_type.e68
 // CHECK:STDOUT: }
 // CHECK:STDOUT:
 // CHECK:STDOUT: specific @CallGenericMethod(constants.%GenericParam, constants.%Generic.facet) {
@@ -608,7 +608,7 @@ fn G() {
 // CHECK:STDOUT:   %Generic.type.loc15_45.1 => constants.%Generic.type.621
 // CHECK:STDOUT:   %U.loc15_32.1 => constants.%Generic.facet
 // CHECK:STDOUT:   %pattern_type.loc15_32 => constants.%pattern_type.c4b
-// CHECK:STDOUT:   %pattern_type.loc15_48 => constants.%pattern_type.589
+// CHECK:STDOUT:   %pattern_type.loc15_55 => constants.%pattern_type.589
 // CHECK:STDOUT:
 // CHECK:STDOUT: !definition:
 // CHECK:STDOUT:   %require_complete => constants.%complete_type

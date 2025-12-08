@@ -26,11 +26,11 @@ import Cpp library "template.h";
 
 fn F() {
   //@dump-sem-ir-begin
-  // CHECK:STDERR: fail_todo_use_template.carbon:[[@LINE+4]]:10: note: in `Cpp` name lookup for `C` [InCppNameLookup]
-  // CHECK:STDERR:   var c: Cpp.C({});
-  // CHECK:STDERR:          ^~~~~
+  // CHECK:STDERR: fail_todo_use_template.carbon:[[@LINE+4]]:17: note: in `Cpp` name lookup for `C` [InCppNameLookup]
+  // CHECK:STDERR:   var unused c: Cpp.C({});
+  // CHECK:STDERR:                 ^~~~~
   // CHECK:STDERR:
-  var c: Cpp.C({});
+  var unused c: Cpp.C({});
   //@dump-sem-ir-end
 }
 

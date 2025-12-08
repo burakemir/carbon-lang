@@ -27,7 +27,7 @@ library "[[@TEST_NAME]]";
 import library "a";
 
 impl () as Add {
-  fn Op[self: Self](other: Self) -> Self { return (); }
+  fn Op[self: Self](unused other: Self) -> Self { return (); }
 }
 
 fn F(x: (), y: ()) -> () {
@@ -213,12 +213,12 @@ fn F(x: (), y: ()) -> () {
 // CHECK:STDOUT:     %return.patt: %pattern_type.cb1 = return_slot_pattern [concrete]
 // CHECK:STDOUT:     %return.param_patt: %pattern_type.cb1 = out_param_pattern %return.patt, call_param2 [concrete]
 // CHECK:STDOUT:   } {
-// CHECK:STDOUT:     %Self.ref.loc7_37: type = name_ref Self, @empty_tuple.type.as.Add.impl.%.loc6_7.2 [concrete = constants.%empty_tuple.type]
+// CHECK:STDOUT:     %Self.ref.loc7_44: type = name_ref Self, @empty_tuple.type.as.Add.impl.%.loc6_7.2 [concrete = constants.%empty_tuple.type]
 // CHECK:STDOUT:     %self.param: %empty_tuple.type = value_param call_param0
 // CHECK:STDOUT:     %Self.ref.loc7_15: type = name_ref Self, @empty_tuple.type.as.Add.impl.%.loc6_7.2 [concrete = constants.%empty_tuple.type]
 // CHECK:STDOUT:     %self: %empty_tuple.type = value_binding self, %self.param
 // CHECK:STDOUT:     %other.param: %empty_tuple.type = value_param call_param1
-// CHECK:STDOUT:     %Self.ref.loc7_28: type = name_ref Self, @empty_tuple.type.as.Add.impl.%.loc6_7.2 [concrete = constants.%empty_tuple.type]
+// CHECK:STDOUT:     %Self.ref.loc7_35: type = name_ref Self, @empty_tuple.type.as.Add.impl.%.loc6_7.2 [concrete = constants.%empty_tuple.type]
 // CHECK:STDOUT:     %other: %empty_tuple.type = value_binding other, %other.param
 // CHECK:STDOUT:     %return.param: ref %empty_tuple.type = out_param call_param2
 // CHECK:STDOUT:     %return: ref %empty_tuple.type = return_slot %return.param
@@ -239,10 +239,10 @@ fn F(x: (), y: ()) -> () {
 // CHECK:STDOUT:
 // CHECK:STDOUT: fn @empty_tuple.type.as.Add.impl.Op(%self.param: %empty_tuple.type, %other.param: %empty_tuple.type) -> %empty_tuple.type {
 // CHECK:STDOUT: !entry:
-// CHECK:STDOUT:   %.loc7_52.1: %empty_tuple.type = tuple_literal () [concrete = constants.%empty_tuple]
-// CHECK:STDOUT:   %.loc7_52.2: init %empty_tuple.type = tuple_init () to %return [concrete = constants.%empty_tuple]
-// CHECK:STDOUT:   %.loc7_53: init %empty_tuple.type = converted %.loc7_52.1, %.loc7_52.2 [concrete = constants.%empty_tuple]
-// CHECK:STDOUT:   return %.loc7_53 to %return
+// CHECK:STDOUT:   %.loc7_59.1: %empty_tuple.type = tuple_literal () [concrete = constants.%empty_tuple]
+// CHECK:STDOUT:   %.loc7_59.2: init %empty_tuple.type = tuple_init () to %return [concrete = constants.%empty_tuple]
+// CHECK:STDOUT:   %.loc7_60: init %empty_tuple.type = converted %.loc7_59.1, %.loc7_59.2 [concrete = constants.%empty_tuple]
+// CHECK:STDOUT:   return %.loc7_60 to %return
 // CHECK:STDOUT: }
 // CHECK:STDOUT:
 // CHECK:STDOUT: fn @F(%x.param: %empty_tuple.type, %y.param: %empty_tuple.type) -> %empty_tuple.type {

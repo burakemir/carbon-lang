@@ -39,7 +39,7 @@ library "[[@TEST_NAME]]";
 import library "a";
 
 fn Run() {
-  var a: Empty = {};
+  var unused a: Empty = {};
 
   var b: Field = {.x = 1};
   b.x = 2;
@@ -48,9 +48,9 @@ fn Run() {
   c.F();
   c.G();
 
-  var d: ForwardDeclared* = &c;
+  var unused d: ForwardDeclared* = &c;
 
-  var e: Incomplete*;
+  var unused e: Incomplete*;
 }
 
 // CHECK:STDOUT: --- a.carbon
@@ -334,9 +334,9 @@ fn Run() {
 // CHECK:STDOUT:     %a.var_patt: %pattern_type.2f0 = var_pattern %a.patt [concrete]
 // CHECK:STDOUT:   }
 // CHECK:STDOUT:   %a.var: ref %Empty = var %a.var_patt
-// CHECK:STDOUT:   %.loc7_19.1: %empty_struct_type = struct_literal () [concrete = constants.%empty_struct]
-// CHECK:STDOUT:   %.loc7_19.2: init %Empty = class_init (), %a.var [concrete = constants.%Empty.val]
-// CHECK:STDOUT:   %.loc7_3: init %Empty = converted %.loc7_19.1, %.loc7_19.2 [concrete = constants.%Empty.val]
+// CHECK:STDOUT:   %.loc7_26.1: %empty_struct_type = struct_literal () [concrete = constants.%empty_struct]
+// CHECK:STDOUT:   %.loc7_26.2: init %Empty = class_init (), %a.var [concrete = constants.%Empty.val]
+// CHECK:STDOUT:   %.loc7_3: init %Empty = converted %.loc7_26.1, %.loc7_26.2 [concrete = constants.%Empty.val]
 // CHECK:STDOUT:   assign %a.var, %.loc7_3
 // CHECK:STDOUT:   %Empty.ref: type = name_ref Empty, imports.%Main.Empty [concrete = constants.%Empty]
 // CHECK:STDOUT:   %a: ref %Empty = ref_binding a, %a.var
@@ -399,10 +399,10 @@ fn Run() {
 // CHECK:STDOUT:   %c.ref.loc16: ref %ForwardDeclared.7b34f2.1 = name_ref c, %c
 // CHECK:STDOUT:   %addr: %ptr.6cf = addr_of %c.ref.loc16
 // CHECK:STDOUT:   %impl.elem0.loc16: %.05a = impl_witness_access constants.%Copy.impl_witness.bf8, element0 [concrete = constants.%ptr.as.Copy.impl.Op.8de]
-// CHECK:STDOUT:   %bound_method.loc16_29.1: <bound method> = bound_method %addr, %impl.elem0.loc16
+// CHECK:STDOUT:   %bound_method.loc16_36.1: <bound method> = bound_method %addr, %impl.elem0.loc16
 // CHECK:STDOUT:   %specific_fn.loc16: <specific function> = specific_function %impl.elem0.loc16, @ptr.as.Copy.impl.Op(constants.%ForwardDeclared.7b34f2.1) [concrete = constants.%ptr.as.Copy.impl.Op.specific_fn]
-// CHECK:STDOUT:   %bound_method.loc16_29.2: <bound method> = bound_method %addr, %specific_fn.loc16
-// CHECK:STDOUT:   %ptr.as.Copy.impl.Op.call: init %ptr.6cf = call %bound_method.loc16_29.2(%addr)
+// CHECK:STDOUT:   %bound_method.loc16_36.2: <bound method> = bound_method %addr, %specific_fn.loc16
+// CHECK:STDOUT:   %ptr.as.Copy.impl.Op.call: init %ptr.6cf = call %bound_method.loc16_36.2(%addr)
 // CHECK:STDOUT:   assign %d.var, %ptr.as.Copy.impl.Op.call
 // CHECK:STDOUT:   %.loc16: type = splice_block %ptr.loc16 [concrete = constants.%ptr.6cf] {
 // CHECK:STDOUT:     %ForwardDeclared.ref.loc16: type = name_ref ForwardDeclared, imports.%Main.ForwardDeclared [concrete = constants.%ForwardDeclared.7b34f2.1]

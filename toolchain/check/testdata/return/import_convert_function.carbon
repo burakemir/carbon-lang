@@ -35,7 +35,7 @@ import P library "library";
 
 // Check that we don't crash if we import functions and reallocate the function
 // value store while handling a `return` statement.
-fn F0(n: i32) -> P.D {
+fn F0(unused n: i32) -> P.D {
   if (false) { return {} as P.C(0); }
   if (false) { return {} as P.C(1); }
   if (false) { return {} as P.C(2); }
@@ -946,7 +946,7 @@ fn F0(n: i32) -> P.D {
 // CHECK:STDOUT:     %P.ref.loc6: <namespace> = name_ref P, imports.%P [concrete = imports.%P]
 // CHECK:STDOUT:     %D.ref: type = name_ref D, imports.%P.D [concrete = constants.%D]
 // CHECK:STDOUT:     %n.param: %i32 = value_param call_param0
-// CHECK:STDOUT:     %.loc6_10: type = splice_block %i32 [concrete = constants.%i32] {
+// CHECK:STDOUT:     %.loc6_17: type = splice_block %i32 [concrete = constants.%i32] {
 // CHECK:STDOUT:       %int_32: Core.IntLiteral = int_value 32 [concrete = constants.%int_32]
 // CHECK:STDOUT:       %i32: type = class_type @Int, @Int(constants.%int_32) [concrete = constants.%i32]
 // CHECK:STDOUT:     }
@@ -1042,9 +1042,9 @@ fn F0(n: i32) -> P.D {
 // CHECK:STDOUT:   %.loc7_26.1: ref %C.b00 = converted %.loc7_24.1, %.loc7_24.4
 // CHECK:STDOUT:   %impl.elem0.loc7_35: %.e33 = impl_witness_access constants.%ImplicitAs.impl_witness.541, element0 [concrete = constants.%C.as.ImplicitAs.impl.Convert.43b]
 // CHECK:STDOUT:   %bound_method.loc7_35: <bound method> = bound_method %.loc7_26.1, %impl.elem0.loc7_35
-// CHECK:STDOUT:   %.loc6_15.1: ref %D = splice_block %return {}
+// CHECK:STDOUT:   %.loc6_22.1: ref %D = splice_block %return {}
 // CHECK:STDOUT:   %.loc7_26.2: %C.b00 = acquire_value %.loc7_26.1
-// CHECK:STDOUT:   %C.as.ImplicitAs.impl.Convert.call.loc7: init %D = call %bound_method.loc7_35(%.loc7_26.2) to %.loc6_15.1
+// CHECK:STDOUT:   %C.as.ImplicitAs.impl.Convert.call.loc7: init %D = call %bound_method.loc7_35(%.loc7_26.2) to %.loc6_22.1
 // CHECK:STDOUT:   %.loc7_35: init %D = converted %.loc7_26.1, %C.as.ImplicitAs.impl.Convert.call.loc7
 // CHECK:STDOUT:   %DestroyT.binding.as_type.as.Destroy.impl.Op.bound.loc7_24.1: <bound method> = bound_method %.loc7_24.4, constants.%DestroyT.binding.as_type.as.Destroy.impl.Op.9ed
 // CHECK:STDOUT:   %DestroyT.binding.as_type.as.Destroy.impl.Op.specific_fn.1: <specific function> = specific_function constants.%DestroyT.binding.as_type.as.Destroy.impl.Op.9ed, @DestroyT.binding.as_type.as.Destroy.impl.Op(constants.%facet_value.e56) [concrete = constants.%DestroyT.binding.as_type.as.Destroy.impl.Op.specific_fn.67c]
@@ -1075,9 +1075,9 @@ fn F0(n: i32) -> P.D {
 // CHECK:STDOUT:   %.loc8_26.1: ref %C.674 = converted %.loc8_24.1, %.loc8_24.4
 // CHECK:STDOUT:   %impl.elem0.loc8_35: %.5da = impl_witness_access constants.%ImplicitAs.impl_witness.371, element0 [concrete = constants.%C.as.ImplicitAs.impl.Convert.e68]
 // CHECK:STDOUT:   %bound_method.loc8_35: <bound method> = bound_method %.loc8_26.1, %impl.elem0.loc8_35
-// CHECK:STDOUT:   %.loc6_15.2: ref %D = splice_block %return {}
+// CHECK:STDOUT:   %.loc6_22.2: ref %D = splice_block %return {}
 // CHECK:STDOUT:   %.loc8_26.2: %C.674 = acquire_value %.loc8_26.1
-// CHECK:STDOUT:   %C.as.ImplicitAs.impl.Convert.call.loc8: init %D = call %bound_method.loc8_35(%.loc8_26.2) to %.loc6_15.2
+// CHECK:STDOUT:   %C.as.ImplicitAs.impl.Convert.call.loc8: init %D = call %bound_method.loc8_35(%.loc8_26.2) to %.loc6_22.2
 // CHECK:STDOUT:   %.loc8_35: init %D = converted %.loc8_26.1, %C.as.ImplicitAs.impl.Convert.call.loc8
 // CHECK:STDOUT:   %DestroyT.binding.as_type.as.Destroy.impl.Op.bound.loc8_24.1: <bound method> = bound_method %.loc8_24.4, constants.%DestroyT.binding.as_type.as.Destroy.impl.Op.d98
 // CHECK:STDOUT:   %DestroyT.binding.as_type.as.Destroy.impl.Op.specific_fn.2: <specific function> = specific_function constants.%DestroyT.binding.as_type.as.Destroy.impl.Op.d98, @DestroyT.binding.as_type.as.Destroy.impl.Op(constants.%facet_value.4dd) [concrete = constants.%DestroyT.binding.as_type.as.Destroy.impl.Op.specific_fn.466]
@@ -1112,9 +1112,9 @@ fn F0(n: i32) -> P.D {
 // CHECK:STDOUT:   %.loc9_26.1: ref %C.681 = converted %.loc9_24.1, %.loc9_24.4
 // CHECK:STDOUT:   %impl.elem0.loc9_35: %.b2b = impl_witness_access constants.%ImplicitAs.impl_witness.2a3, element0 [concrete = constants.%C.as.ImplicitAs.impl.Convert.cb1]
 // CHECK:STDOUT:   %bound_method.loc9_35: <bound method> = bound_method %.loc9_26.1, %impl.elem0.loc9_35
-// CHECK:STDOUT:   %.loc6_15.3: ref %D = splice_block %return {}
+// CHECK:STDOUT:   %.loc6_22.3: ref %D = splice_block %return {}
 // CHECK:STDOUT:   %.loc9_26.2: %C.681 = acquire_value %.loc9_26.1
-// CHECK:STDOUT:   %C.as.ImplicitAs.impl.Convert.call.loc9: init %D = call %bound_method.loc9_35(%.loc9_26.2) to %.loc6_15.3
+// CHECK:STDOUT:   %C.as.ImplicitAs.impl.Convert.call.loc9: init %D = call %bound_method.loc9_35(%.loc9_26.2) to %.loc6_22.3
 // CHECK:STDOUT:   %.loc9_35: init %D = converted %.loc9_26.1, %C.as.ImplicitAs.impl.Convert.call.loc9
 // CHECK:STDOUT:   %DestroyT.binding.as_type.as.Destroy.impl.Op.bound.loc9_24.1: <bound method> = bound_method %.loc9_24.4, constants.%DestroyT.binding.as_type.as.Destroy.impl.Op.ce4
 // CHECK:STDOUT:   %DestroyT.binding.as_type.as.Destroy.impl.Op.specific_fn.4: <specific function> = specific_function constants.%DestroyT.binding.as_type.as.Destroy.impl.Op.ce4, @DestroyT.binding.as_type.as.Destroy.impl.Op(constants.%facet_value.7fe) [concrete = constants.%DestroyT.binding.as_type.as.Destroy.impl.Op.specific_fn.cfd]
@@ -1153,9 +1153,9 @@ fn F0(n: i32) -> P.D {
 // CHECK:STDOUT:   %.loc10_26.1: ref %C.7ac = converted %.loc10_24.1, %.loc10_24.4
 // CHECK:STDOUT:   %impl.elem0.loc10_35: %.11b = impl_witness_access constants.%ImplicitAs.impl_witness.29c, element0 [concrete = constants.%C.as.ImplicitAs.impl.Convert.67e]
 // CHECK:STDOUT:   %bound_method.loc10_35: <bound method> = bound_method %.loc10_26.1, %impl.elem0.loc10_35
-// CHECK:STDOUT:   %.loc6_15.4: ref %D = splice_block %return {}
+// CHECK:STDOUT:   %.loc6_22.4: ref %D = splice_block %return {}
 // CHECK:STDOUT:   %.loc10_26.2: %C.7ac = acquire_value %.loc10_26.1
-// CHECK:STDOUT:   %C.as.ImplicitAs.impl.Convert.call.loc10: init %D = call %bound_method.loc10_35(%.loc10_26.2) to %.loc6_15.4
+// CHECK:STDOUT:   %C.as.ImplicitAs.impl.Convert.call.loc10: init %D = call %bound_method.loc10_35(%.loc10_26.2) to %.loc6_22.4
 // CHECK:STDOUT:   %.loc10_35: init %D = converted %.loc10_26.1, %C.as.ImplicitAs.impl.Convert.call.loc10
 // CHECK:STDOUT:   %DestroyT.binding.as_type.as.Destroy.impl.Op.bound.loc10_24.1: <bound method> = bound_method %.loc10_24.4, constants.%DestroyT.binding.as_type.as.Destroy.impl.Op.931
 // CHECK:STDOUT:   %DestroyT.binding.as_type.as.Destroy.impl.Op.specific_fn.7: <specific function> = specific_function constants.%DestroyT.binding.as_type.as.Destroy.impl.Op.931, @DestroyT.binding.as_type.as.Destroy.impl.Op(constants.%facet_value.99b) [concrete = constants.%DestroyT.binding.as_type.as.Destroy.impl.Op.specific_fn.20a]
@@ -1198,9 +1198,9 @@ fn F0(n: i32) -> P.D {
 // CHECK:STDOUT:   %.loc11_26.1: ref %C.89d = converted %.loc11_24.1, %.loc11_24.4
 // CHECK:STDOUT:   %impl.elem0.loc11_35: %.0dc = impl_witness_access constants.%ImplicitAs.impl_witness.565, element0 [concrete = constants.%C.as.ImplicitAs.impl.Convert.58d]
 // CHECK:STDOUT:   %bound_method.loc11_35: <bound method> = bound_method %.loc11_26.1, %impl.elem0.loc11_35
-// CHECK:STDOUT:   %.loc6_15.5: ref %D = splice_block %return {}
+// CHECK:STDOUT:   %.loc6_22.5: ref %D = splice_block %return {}
 // CHECK:STDOUT:   %.loc11_26.2: %C.89d = acquire_value %.loc11_26.1
-// CHECK:STDOUT:   %C.as.ImplicitAs.impl.Convert.call.loc11: init %D = call %bound_method.loc11_35(%.loc11_26.2) to %.loc6_15.5
+// CHECK:STDOUT:   %C.as.ImplicitAs.impl.Convert.call.loc11: init %D = call %bound_method.loc11_35(%.loc11_26.2) to %.loc6_22.5
 // CHECK:STDOUT:   %.loc11_35: init %D = converted %.loc11_26.1, %C.as.ImplicitAs.impl.Convert.call.loc11
 // CHECK:STDOUT:   %DestroyT.binding.as_type.as.Destroy.impl.Op.bound.loc11_24.1: <bound method> = bound_method %.loc11_24.4, constants.%DestroyT.binding.as_type.as.Destroy.impl.Op.d47
 // CHECK:STDOUT:   %DestroyT.binding.as_type.as.Destroy.impl.Op.specific_fn.11: <specific function> = specific_function constants.%DestroyT.binding.as_type.as.Destroy.impl.Op.d47, @DestroyT.binding.as_type.as.Destroy.impl.Op(constants.%facet_value.b4c) [concrete = constants.%DestroyT.binding.as_type.as.Destroy.impl.Op.specific_fn.fe8]
@@ -1247,9 +1247,9 @@ fn F0(n: i32) -> P.D {
 // CHECK:STDOUT:   %.loc12_26.1: ref %C.f0a = converted %.loc12_24.1, %.loc12_24.4
 // CHECK:STDOUT:   %impl.elem0.loc12_35: %.332 = impl_witness_access constants.%ImplicitAs.impl_witness.c1a, element0 [concrete = constants.%C.as.ImplicitAs.impl.Convert.a45]
 // CHECK:STDOUT:   %bound_method.loc12_35: <bound method> = bound_method %.loc12_26.1, %impl.elem0.loc12_35
-// CHECK:STDOUT:   %.loc6_15.6: ref %D = splice_block %return {}
+// CHECK:STDOUT:   %.loc6_22.6: ref %D = splice_block %return {}
 // CHECK:STDOUT:   %.loc12_26.2: %C.f0a = acquire_value %.loc12_26.1
-// CHECK:STDOUT:   %C.as.ImplicitAs.impl.Convert.call.loc12: init %D = call %bound_method.loc12_35(%.loc12_26.2) to %.loc6_15.6
+// CHECK:STDOUT:   %C.as.ImplicitAs.impl.Convert.call.loc12: init %D = call %bound_method.loc12_35(%.loc12_26.2) to %.loc6_22.6
 // CHECK:STDOUT:   %.loc12_35: init %D = converted %.loc12_26.1, %C.as.ImplicitAs.impl.Convert.call.loc12
 // CHECK:STDOUT:   %DestroyT.binding.as_type.as.Destroy.impl.Op.bound.loc12_24.1: <bound method> = bound_method %.loc12_24.4, constants.%DestroyT.binding.as_type.as.Destroy.impl.Op.217
 // CHECK:STDOUT:   %DestroyT.binding.as_type.as.Destroy.impl.Op.specific_fn.16: <specific function> = specific_function constants.%DestroyT.binding.as_type.as.Destroy.impl.Op.217, @DestroyT.binding.as_type.as.Destroy.impl.Op(constants.%facet_value.430) [concrete = constants.%DestroyT.binding.as_type.as.Destroy.impl.Op.specific_fn.bcb]
@@ -1300,9 +1300,9 @@ fn F0(n: i32) -> P.D {
 // CHECK:STDOUT:   %.loc13_26.1: ref %C.c60 = converted %.loc13_24.1, %.loc13_24.4
 // CHECK:STDOUT:   %impl.elem0.loc13_35: %.1bb = impl_witness_access constants.%ImplicitAs.impl_witness.ebf, element0 [concrete = constants.%C.as.ImplicitAs.impl.Convert.ad0]
 // CHECK:STDOUT:   %bound_method.loc13_35: <bound method> = bound_method %.loc13_26.1, %impl.elem0.loc13_35
-// CHECK:STDOUT:   %.loc6_15.7: ref %D = splice_block %return {}
+// CHECK:STDOUT:   %.loc6_22.7: ref %D = splice_block %return {}
 // CHECK:STDOUT:   %.loc13_26.2: %C.c60 = acquire_value %.loc13_26.1
-// CHECK:STDOUT:   %C.as.ImplicitAs.impl.Convert.call.loc13: init %D = call %bound_method.loc13_35(%.loc13_26.2) to %.loc6_15.7
+// CHECK:STDOUT:   %C.as.ImplicitAs.impl.Convert.call.loc13: init %D = call %bound_method.loc13_35(%.loc13_26.2) to %.loc6_22.7
 // CHECK:STDOUT:   %.loc13_35: init %D = converted %.loc13_26.1, %C.as.ImplicitAs.impl.Convert.call.loc13
 // CHECK:STDOUT:   %DestroyT.binding.as_type.as.Destroy.impl.Op.bound.loc13_24.1: <bound method> = bound_method %.loc13_24.4, constants.%DestroyT.binding.as_type.as.Destroy.impl.Op.bf7
 // CHECK:STDOUT:   %DestroyT.binding.as_type.as.Destroy.impl.Op.specific_fn.22: <specific function> = specific_function constants.%DestroyT.binding.as_type.as.Destroy.impl.Op.bf7, @DestroyT.binding.as_type.as.Destroy.impl.Op(constants.%facet_value.14a) [concrete = constants.%DestroyT.binding.as_type.as.Destroy.impl.Op.specific_fn.5e9]
@@ -1357,9 +1357,9 @@ fn F0(n: i32) -> P.D {
 // CHECK:STDOUT:   %.loc14_26.1: ref %C.304 = converted %.loc14_24.1, %.loc14_24.4
 // CHECK:STDOUT:   %impl.elem0.loc14_35: %.bc1 = impl_witness_access constants.%ImplicitAs.impl_witness.b93, element0 [concrete = constants.%C.as.ImplicitAs.impl.Convert.9be]
 // CHECK:STDOUT:   %bound_method.loc14_35: <bound method> = bound_method %.loc14_26.1, %impl.elem0.loc14_35
-// CHECK:STDOUT:   %.loc6_15.8: ref %D = splice_block %return {}
+// CHECK:STDOUT:   %.loc6_22.8: ref %D = splice_block %return {}
 // CHECK:STDOUT:   %.loc14_26.2: %C.304 = acquire_value %.loc14_26.1
-// CHECK:STDOUT:   %C.as.ImplicitAs.impl.Convert.call.loc14: init %D = call %bound_method.loc14_35(%.loc14_26.2) to %.loc6_15.8
+// CHECK:STDOUT:   %C.as.ImplicitAs.impl.Convert.call.loc14: init %D = call %bound_method.loc14_35(%.loc14_26.2) to %.loc6_22.8
 // CHECK:STDOUT:   %.loc14_35: init %D = converted %.loc14_26.1, %C.as.ImplicitAs.impl.Convert.call.loc14
 // CHECK:STDOUT:   %DestroyT.binding.as_type.as.Destroy.impl.Op.bound.loc14_24.1: <bound method> = bound_method %.loc14_24.4, constants.%DestroyT.binding.as_type.as.Destroy.impl.Op.85d
 // CHECK:STDOUT:   %DestroyT.binding.as_type.as.Destroy.impl.Op.specific_fn.29: <specific function> = specific_function constants.%DestroyT.binding.as_type.as.Destroy.impl.Op.85d, @DestroyT.binding.as_type.as.Destroy.impl.Op(constants.%facet_value.488) [concrete = constants.%DestroyT.binding.as_type.as.Destroy.impl.Op.specific_fn.eb6]
@@ -1398,8 +1398,8 @@ fn F0(n: i32) -> P.D {
 // CHECK:STDOUT: !if.else.loc14:
 // CHECK:STDOUT:   %P.ref.loc15: <namespace> = name_ref P, imports.%P [concrete = imports.%P]
 // CHECK:STDOUT:   %Make.ref: %Make.type = name_ref Make, imports.%P.Make [concrete = constants.%Make]
-// CHECK:STDOUT:   %.loc6_15.9: ref %D = splice_block %return {}
-// CHECK:STDOUT:   %Make.call: init %D = call %Make.ref() to %.loc6_15.9
+// CHECK:STDOUT:   %.loc6_22.9: ref %D = splice_block %return {}
+// CHECK:STDOUT:   %Make.call: init %D = call %Make.ref() to %.loc6_22.9
 // CHECK:STDOUT:   %DestroyT.binding.as_type.as.Destroy.impl.Op.bound.loc14_24.2: <bound method> = bound_method %.loc14_24.4, constants.%DestroyT.binding.as_type.as.Destroy.impl.Op.85d
 // CHECK:STDOUT:   %DestroyT.binding.as_type.as.Destroy.impl.Op.specific_fn.37: <specific function> = specific_function constants.%DestroyT.binding.as_type.as.Destroy.impl.Op.85d, @DestroyT.binding.as_type.as.Destroy.impl.Op(constants.%facet_value.488) [concrete = constants.%DestroyT.binding.as_type.as.Destroy.impl.Op.specific_fn.eb6]
 // CHECK:STDOUT:   %bound_method.loc14_24.2: <bound method> = bound_method %.loc14_24.4, %DestroyT.binding.as_type.as.Destroy.impl.Op.specific_fn.37

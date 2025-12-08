@@ -15,7 +15,7 @@
 fn F() {
   let T:! type = i32;
   var p: T*;
-  let a: T = *p;
+  let unused a: T = *p;
 }
 
 // CHECK:STDOUT: --- generic.carbon
@@ -95,11 +95,11 @@ fn F() {
 // CHECK:STDOUT:     %a.patt: %pattern_type.e68 = value_binding_pattern a [concrete]
 // CHECK:STDOUT:   }
 // CHECK:STDOUT:   %p.ref: ref %ptr = name_ref p, %p
-// CHECK:STDOUT:   %.loc18_15: %ptr = acquire_value %p.ref
-// CHECK:STDOUT:   %.loc18_14.1: ref %T = deref %.loc18_15
+// CHECK:STDOUT:   %.loc18_22: %ptr = acquire_value %p.ref
+// CHECK:STDOUT:   %.loc18_21.1: ref %T = deref %.loc18_22
 // CHECK:STDOUT:   %T.ref.loc18: type = name_ref T, %T [symbolic = constants.%T]
-// CHECK:STDOUT:   %.loc18_14.2: %T = acquire_value %.loc18_14.1
-// CHECK:STDOUT:   %a: %T = value_binding a, %.loc18_14.2
+// CHECK:STDOUT:   %.loc18_21.2: %T = acquire_value %.loc18_21.1
+// CHECK:STDOUT:   %a: %T = value_binding a, %.loc18_21.2
 // CHECK:STDOUT:   %impl.elem0: %.17f = impl_witness_access constants.%Destroy.impl_witness.60c, element0 [symbolic = constants.%DestroyT.binding.as_type.as.Destroy.impl.Op.9ef]
 // CHECK:STDOUT:   %bound_method.loc17_3.1: <bound method> = bound_method %p.var, %impl.elem0
 // CHECK:STDOUT:   %specific_fn: <specific function> = specific_function %impl.elem0, @DestroyT.binding.as_type.as.Destroy.impl.Op(constants.%facet_value) [symbolic = constants.%DestroyT.binding.as_type.as.Destroy.impl.Op.specific_fn]
