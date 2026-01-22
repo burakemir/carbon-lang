@@ -63,7 +63,7 @@ final impl CppCompat.Long32 as ImplicitAs(IntLiteral()) {
 
 // TODO: ImplicitAs from Int(N) to Long32 if N < 32.
 impl i32 as ImplicitAs(CppCompat.Long32) {
-  fn Convert[self: Self]() -> CppCompat.Long32 = "int.convert_checked";
+  fn Convert[self: Self]() -> CppCompat.Long32 = "int.convert";
 }
 
 // TODO: ImplicitAs from Long32 to Int(N) if N > 32.
@@ -86,7 +86,7 @@ final impl CppCompat.ULong32 as ImplicitAs(IntLiteral()) {
 
 // TODO: ImplicitAs from UInt(N) to ULong32 if N < 32.
 impl u32 as ImplicitAs(CppCompat.ULong32) {
-  fn Convert[self: Self]() -> CppCompat.ULong32 = "int.convert_checked";
+  fn Convert[self: Self]() -> CppCompat.ULong32 = "int.convert";
 }
 
 // TODO: ImplicitAs from ULong32 to UInt(N) if N > 32.
@@ -109,7 +109,7 @@ final impl CppCompat.LongLong64 as ImplicitAs(IntLiteral()) {
 
 // TODO: ImplicitAs from Int(N) to LongLong64 if N < 64.
 impl i64 as ImplicitAs(CppCompat.LongLong64) {
-  fn Convert[self: Self]() -> CppCompat.LongLong64 = "int.convert_checked";
+  fn Convert[self: Self]() -> CppCompat.LongLong64 = "int.convert";
 }
 
 // TODO: ImplicitAs from LongLong64 to Int(N) if N > 64.
@@ -132,7 +132,7 @@ final impl CppCompat.ULongLong64 as ImplicitAs(IntLiteral()) {
 
 // TODO: ImplicitAs from UInt(N) to ULongLong64 if N < 64.
 impl u64 as ImplicitAs(CppCompat.ULongLong64) {
-  fn Convert[self: Self]() -> CppCompat.ULongLong64 = "int.convert_checked";
+  fn Convert[self: Self]() -> CppCompat.ULongLong64 = "int.convert";
 }
 
 // TODO: ImplicitAs from ULongLong64 to UInt(N) if N > 64.
@@ -819,6 +819,180 @@ impl forall [T:! ImplicitAs(CppCompat.ULongLong64)]
 impl forall [T:! ImplicitAs(CppCompat.ULongLong64)]
     T as RightShiftWith(CppCompat.ULongLong64) where .Result = CppCompat.ULongLong64 {
   fn Op[self: CppCompat.ULongLong64](other: CppCompat.ULongLong64) -> CppCompat.ULongLong64 = "int.right_shift";
+}
+
+// Arithmetic with primitive types (LHS is primitive, RHS is Cpp type).
+// We want the result to be the Cpp type (simulating promotion to long/etc).
+
+impl i32 as AddWith(CppCompat.Long32) where .Result = CppCompat.Long32 {
+  fn Op[self: i32](other: CppCompat.Long32) -> CppCompat.Long32 {
+    return (self as CppCompat.Long32) + other;
+  }
+}
+impl i32 as SubWith(CppCompat.Long32) where .Result = CppCompat.Long32 {
+  fn Op[self: i32](other: CppCompat.Long32) -> CppCompat.Long32 {
+    return (self as CppCompat.Long32) - other;
+  }
+}
+impl i32 as MulWith(CppCompat.Long32) where .Result = CppCompat.Long32 {
+  fn Op[self: i32](other: CppCompat.Long32) -> CppCompat.Long32 {
+    return (self as CppCompat.Long32) * other;
+  }
+}
+impl i32 as DivWith(CppCompat.Long32) where .Result = CppCompat.Long32 {
+  fn Op[self: i32](other: CppCompat.Long32) -> CppCompat.Long32 {
+    return (self as CppCompat.Long32) / other;
+  }
+}
+impl i32 as ModWith(CppCompat.Long32) where .Result = CppCompat.Long32 {
+  fn Op[self: i32](other: CppCompat.Long32) -> CppCompat.Long32 {
+    return (self as CppCompat.Long32) % other;
+  }
+}
+
+impl i32 as BitAndWith(CppCompat.Long32) where .Result = CppCompat.Long32 {
+  fn Op[self: i32](other: CppCompat.Long32) -> CppCompat.Long32 {
+    return (self as CppCompat.Long32) & other;
+  }
+}
+impl i32 as BitOrWith(CppCompat.Long32) where .Result = CppCompat.Long32 {
+  fn Op[self: i32](other: CppCompat.Long32) -> CppCompat.Long32 {
+    return (self as CppCompat.Long32) | other;
+  }
+}
+impl i32 as BitXorWith(CppCompat.Long32) where .Result = CppCompat.Long32 {
+  fn Op[self: i32](other: CppCompat.Long32) -> CppCompat.Long32 {
+    return (self as CppCompat.Long32) ^ other;
+  }
+}
+
+// ULong32 vs u32
+impl u32 as AddWith(CppCompat.ULong32) where .Result = CppCompat.ULong32 {
+  fn Op[self: u32](other: CppCompat.ULong32) -> CppCompat.ULong32 {
+    return (self as CppCompat.ULong32) + other;
+  }
+}
+impl u32 as SubWith(CppCompat.ULong32) where .Result = CppCompat.ULong32 {
+  fn Op[self: u32](other: CppCompat.ULong32) -> CppCompat.ULong32 {
+    return (self as CppCompat.ULong32) - other;
+  }
+}
+impl u32 as MulWith(CppCompat.ULong32) where .Result = CppCompat.ULong32 {
+  fn Op[self: u32](other: CppCompat.ULong32) -> CppCompat.ULong32 {
+    return (self as CppCompat.ULong32) * other;
+  }
+}
+impl u32 as DivWith(CppCompat.ULong32) where .Result = CppCompat.ULong32 {
+  fn Op[self: u32](other: CppCompat.ULong32) -> CppCompat.ULong32 {
+    return (self as CppCompat.ULong32) / other;
+  }
+}
+impl u32 as ModWith(CppCompat.ULong32) where .Result = CppCompat.ULong32 {
+  fn Op[self: u32](other: CppCompat.ULong32) -> CppCompat.ULong32 {
+    return (self as CppCompat.ULong32) % other;
+  }
+}
+
+impl u32 as BitAndWith(CppCompat.ULong32) where .Result = CppCompat.ULong32 {
+  fn Op[self: u32](other: CppCompat.ULong32) -> CppCompat.ULong32 {
+    return (self as CppCompat.ULong32) & other;
+  }
+}
+impl u32 as BitOrWith(CppCompat.ULong32) where .Result = CppCompat.ULong32 {
+  fn Op[self: u32](other: CppCompat.ULong32) -> CppCompat.ULong32 {
+    return (self as CppCompat.ULong32) | other;
+  }
+}
+impl u32 as BitXorWith(CppCompat.ULong32) where .Result = CppCompat.ULong32 {
+  fn Op[self: u32](other: CppCompat.ULong32) -> CppCompat.ULong32 {
+    return (self as CppCompat.ULong32) ^ other;
+  }
+}
+
+// LongLong64 vs i64
+impl i64 as AddWith(CppCompat.LongLong64) where .Result = CppCompat.LongLong64 {
+  fn Op[self: i64](other: CppCompat.LongLong64) -> CppCompat.LongLong64 {
+    return (self as CppCompat.LongLong64) + other;
+  }
+}
+impl i64 as SubWith(CppCompat.LongLong64) where .Result = CppCompat.LongLong64 {
+  fn Op[self: i64](other: CppCompat.LongLong64) -> CppCompat.LongLong64 {
+    return (self as CppCompat.LongLong64) - other;
+  }
+}
+impl i64 as MulWith(CppCompat.LongLong64) where .Result = CppCompat.LongLong64 {
+  fn Op[self: i64](other: CppCompat.LongLong64) -> CppCompat.LongLong64 {
+    return (self as CppCompat.LongLong64) * other;
+  }
+}
+impl i64 as DivWith(CppCompat.LongLong64) where .Result = CppCompat.LongLong64 {
+  fn Op[self: i64](other: CppCompat.LongLong64) -> CppCompat.LongLong64 {
+    return (self as CppCompat.LongLong64) / other;
+  }
+}
+impl i64 as ModWith(CppCompat.LongLong64) where .Result = CppCompat.LongLong64 {
+  fn Op[self: i64](other: CppCompat.LongLong64) -> CppCompat.LongLong64 {
+    return (self as CppCompat.LongLong64) % other;
+  }
+}
+
+impl i64 as BitAndWith(CppCompat.LongLong64) where .Result = CppCompat.LongLong64 {
+  fn Op[self: i64](other: CppCompat.LongLong64) -> CppCompat.LongLong64 {
+    return (self as CppCompat.LongLong64) & other;
+  }
+}
+impl i64 as BitOrWith(CppCompat.LongLong64) where .Result = CppCompat.LongLong64 {
+  fn Op[self: i64](other: CppCompat.LongLong64) -> CppCompat.LongLong64 {
+    return (self as CppCompat.LongLong64) | other;
+  }
+}
+impl i64 as BitXorWith(CppCompat.LongLong64) where .Result = CppCompat.LongLong64 {
+  fn Op[self: i64](other: CppCompat.LongLong64) -> CppCompat.LongLong64 {
+    return (self as CppCompat.LongLong64) ^ other;
+  }
+}
+
+// ULongLong64 vs u64
+impl u64 as AddWith(CppCompat.ULongLong64) where .Result = CppCompat.ULongLong64 {
+  fn Op[self: u64](other: CppCompat.ULongLong64) -> CppCompat.ULongLong64 {
+    return (self as CppCompat.ULongLong64) + other;
+  }
+}
+impl u64 as SubWith(CppCompat.ULongLong64) where .Result = CppCompat.ULongLong64 {
+  fn Op[self: u64](other: CppCompat.ULongLong64) -> CppCompat.ULongLong64 {
+    return (self as CppCompat.ULongLong64) - other;
+  }
+}
+impl u64 as MulWith(CppCompat.ULongLong64) where .Result = CppCompat.ULongLong64 {
+  fn Op[self: u64](other: CppCompat.ULongLong64) -> CppCompat.ULongLong64 {
+    return (self as CppCompat.ULongLong64) * other;
+  }
+}
+impl u64 as DivWith(CppCompat.ULongLong64) where .Result = CppCompat.ULongLong64 {
+  fn Op[self: u64](other: CppCompat.ULongLong64) -> CppCompat.ULongLong64 {
+    return (self as CppCompat.ULongLong64) / other;
+  }
+}
+impl u64 as ModWith(CppCompat.ULongLong64) where .Result = CppCompat.ULongLong64 {
+  fn Op[self: u64](other: CppCompat.ULongLong64) -> CppCompat.ULongLong64 {
+    return (self as CppCompat.ULongLong64) % other;
+  }
+}
+
+impl u64 as BitAndWith(CppCompat.ULongLong64) where .Result = CppCompat.ULongLong64 {
+  fn Op[self: u64](other: CppCompat.ULongLong64) -> CppCompat.ULongLong64 {
+    return (self as CppCompat.ULongLong64) & other;
+  }
+}
+impl u64 as BitOrWith(CppCompat.ULongLong64) where .Result = CppCompat.ULongLong64 {
+  fn Op[self: u64](other: CppCompat.ULongLong64) -> CppCompat.ULongLong64 {
+    return (self as CppCompat.ULongLong64) | other;
+  }
+}
+impl u64 as BitXorWith(CppCompat.ULongLong64) where .Result = CppCompat.ULongLong64 {
+  fn Op[self: u64](other: CppCompat.ULongLong64) -> CppCompat.ULongLong64 {
+    return (self as CppCompat.ULongLong64) ^ other;
+  }
 }
 
 // Compound assignments.
